@@ -1,0 +1,190 @@
+/* Глобальные стили для АИС ЕССО */
+
+/* CSS переменные для цветовой схемы */
+:root {
+  --bg: #f3f5f7;
+  --card: #ffffff;
+  --text: #1e2a3a;
+  --muted: #6b778c;
+  --primary: #2f4b7c;
+  --primary-weak: #3f5e94;
+  --border: #e2e8f0;
+  --accent: #2f9e44;
+  --danger: #e03131;
+  --shadow: 0 2px 10px rgba(30, 42, 58, 0.08);
+  --radius: 12px;
+}
+
+/* Базовые стили */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Улучшения для Vuetify компонентов */
+.v-application {
+  background: var(--bg) !important;
+}
+
+.v-main {
+  background: var(--bg) !important;
+}
+
+/* Стили для карточек */
+.v-card {
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Стили для кнопок */
+.v-btn {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+}
+
+.v-btn--variant-outlined {
+  border-width: 1px !important;
+}
+
+/* Стили для полей ввода */
+.v-text-field .v-field,
+.v-select .v-field {
+  border-radius: 8px !important;
+}
+
+.v-text-field .v-field--variant-outlined,
+.v-select .v-field--variant-outlined {
+  border-width: 1px !important;
+}
+
+/* Стили для таблиц */
+.v-data-table {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.v-data-table th {
+  background-color: #f8fafc !important;
+  color: var(--muted) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+.v-data-table td {
+  font-size: 14px !important;
+  color: var(--text) !important;
+}
+
+.v-data-table tr:hover td {
+  background-color: #fafbfd !important;
+}
+
+/* Стили для чипов */
+.v-chip {
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Стили для алертов */
+.v-alert {
+  border-radius: 8px !important;
+}
+
+/* Стили для диалогов */
+.v-dialog .v-card {
+  border-radius: 12px !important;
+}
+
+/* Стили для навигации */
+.v-navigation-drawer {
+  border-right: 1px solid var(--border) !important;
+}
+
+.v-list-item {
+  border-radius: 8px !important;
+  margin: 2px 0 !important;
+}
+
+.v-list-item:hover {
+  background-color: #f1f4f8 !important;
+}
+
+.v-list-item--active {
+  background-color: #e9eef7 !important;
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+}
+
+/* Стили для верхней панели */
+.v-app-bar {
+  box-shadow: 0 1px 3px rgba(30, 42, 58, 0.1) !important;
+}
+
+/* Улучшения для мобильных устройств */
+@media (max-width: 768px) {
+  .v-card {
+    border-radius: 8px !important;
+  }
+  
+  .v-btn {
+    border-radius: 6px !important;
+  }
+}
+
+/* Анимации */
+.v-card,
+.v-btn,
+.v-text-field,
+.v-select {
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Фокус состояния */
+.v-text-field:focus-within .v-field,
+.v-select:focus-within .v-field {
+  border-color: var(--primary) !important;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Улучшения для печати */
+@media print {
+  .v-navigation-drawer,
+  .v-app-bar,
+  .v-btn {
+    display: none !important;
+  }
+  
+  .v-main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
