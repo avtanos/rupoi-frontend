@@ -1,327 +1,226 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>АИС ЕССО — Вход в систему</title>
-  <style>
-    :root { 
-      --bg:#f3f5f7; 
-      --card:#ffffff; 
-      --text:#1e2a3a; 
-      --muted:#6b778c; 
-      --primary:#2f4b7c; 
-      --primary-weak:#3f5e94; 
-      --border:#e2e8f0; 
-      --accent:#2f9e44; 
-      --danger:#e03131; 
-      --warning:#b08900; 
-      --shadow:0 2px 10px rgba(30,42,58,.08); 
-      --radius:12px; 
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh}
-
-    .login-container{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:40px;width:100%;max-width:400px;margin:20px}
-    
-    .logo{text-align:center;margin-bottom:30px}
-    .logo .icon{width:64px;height:64px;border-radius:50%;background:var(--primary);opacity:.3;margin:0 auto 16px;display:block}
-    .logo h1{margin:0;color:var(--primary);font-size:24px;font-weight:700}
-    .logo p{margin:8px 0 0;color:var(--muted);font-size:14px}
-
-    .form-group{margin-bottom:20px}
-    .form-group label{display:block;margin-bottom:8px;color:var(--muted);font-size:14px;font-weight:500}
-    .form-group input{width:100%;padding:12px 16px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:16px;outline:none;transition:border-color 0.2s ease}
-    .form-group input:focus{border-color:var(--primary)}
-    .form-group input.error{border-color:var(--danger)}
-
-    .error-message{color:var(--danger);font-size:14px;margin-top:8px;display:none}
-    .error-message.show{display:block}
-
-    .btn{width:100%;padding:14px 16px;border-radius:8px;border:none;font-size:16px;font-weight:600;cursor:pointer;transition:background-color 0.2s ease}
-    .btn.primary{background:var(--primary);color:#fff}
-    .btn.primary:hover{background:var(--primary-weak)}
-    .btn.primary:disabled{background:var(--muted);cursor:not-allowed}
-
-    .form-footer{text-align:center;margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
-    .form-footer a{color:var(--primary);text-decoration:none;font-size:14px}
-    .form-footer a:hover{text-decoration:underline}
-
-    .demo-accounts{margin-top:24px;padding:16px;background:#f8fafc;border-radius:8px;border:1px solid var(--border)}
-    .demo-accounts h4{margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-    .demo-account{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
-    .demo-account:last-child{border-bottom:none}
-    .demo-account .role{font-size:12px;color:var(--muted)}
-    .demo-account .credentials{font-size:12px;font-family:monospace;color:var(--text)}
-    .demo-account .login-btn{background:var(--accent);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer}
-
-    .loading{display:none;text-align:center;margin-top:16px}
-    .loading.show{display:block}
-    .spinner{width:20px;height:20px;border:2px solid var(--border);border-top:2px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 8px}
-    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-
-    @media (max-width:480px){.login-container{padding:24px;margin:16px}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Вход в систему - АИС РУПОИ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, rgb(47, 75, 124) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            color: #2f4b7c;
+            margin: 0;
+            font-size: 2rem;
+        }
+        .logo p {
+            color: #666;
+            margin: 10px 0 0 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #2f4b7c;
+        }
+        .login-btn {
+            width: 100%;
+            background: #2f4b7c;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 20px;
+        }
+        .login-btn:hover {
+            background: #1e3a5c;
+        }
+        .demo-accounts {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .demo-accounts h3 {
+            margin: 0 0 15px 0;
+            color: #2f4b7c;
+            font-size: 1.1rem;
+        }
+        .demo-account {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e1e5e9;
+        }
+        .demo-account .role {
+            font-weight: 600;
+            color: #2f4b7c;
+            margin-bottom: 5px;
+        }
+        .demo-account .credentials {
+            color: #666;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .demo-account .login-demo {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        .demo-account .login-demo:hover {
+            background: #218838;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2f4b7c;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5e9;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-  <div class="login-container">
-    <div class="logo">
-      <div class="icon"></div>
-      <h1>АИС ЕССО</h1>
-      <p>Автоматизированная информационная система</p>
+    <div class="login-container">
+        <a href="index.html" class="back-link">← Назад к главной</a>
+        
+        <div class="logo">
+            <h1>🏥 АИС РУПОИ</h1>
+            <p>Автоматизированная информационная система</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Имя пользователя</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="login-btn">Войти в систему</button>
+        </form>
+        
+        <div class="demo-accounts">
+            <h3>🔑 Демо-аккаунты для тестирования</h3>
+            
+            <div class="demo-account">
+                <div class="role">Регистратура</div>
+                <div class="credentials">registry_user / registry123</div>
+                <button class="login-demo" onclick="fillDemoCredentials('registry_user', 'registry123')">Войти</button>
+            </div>
+            
+            <div class="demo-account">
+                <div class="role">Медицинский отдел</div>
+                <div class="credentials">medical_user / medical123</div>
+                <button class="login-demo" onclick="fillDemoCredentials('medical_user', 'medical123')">Войти</button>
+            </div>
+            
+            <div class="demo-account">
+                <div class="role">Цех</div>
+                <div class="credentials">workshop_user / workshop123</div>
+                <button class="login-demo" onclick="fillDemoCredentials('workshop_user', 'workshop123')">Войти</button>
+            </div>
+            
+            <div class="demo-account">
+                <div class="role">Склад</div>
+                <div class="credentials">warehouse_user / warehouse123</div>
+                <button class="login-demo" onclick="fillDemoCredentials('warehouse_user', 'warehouse123')">Войти</button>
+            </div>
+            
+            <div class="demo-account">
+                <div class="role">Администратор</div>
+                <div class="credentials">admin_user / admin123</div>
+                <button class="login-demo" onclick="fillDemoCredentials('admin_user', 'admin123')">Войти</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>АИС РУПОИ</strong> - современное решение для управления протезно-ортопедическими изделиями в Кыргызстане 🇰🇬</p>
+        </div>
     </div>
 
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="username">Имя пользователя</label>
-        <input type="text" id="username" name="username" required autocomplete="username">
-        <div class="error-message" id="usernameError"></div>
-      </div>
-
-      <div class="form-group">
-        <label for="password">Пароль</label>
-        <input type="password" id="password" name="password" required autocomplete="current-password">
-        <div class="error-message" id="passwordError"></div>
-      </div>
-
-      <button type="submit" class="btn primary" id="loginBtn">
-        Войти в систему
-      </button>
-
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <div>Выполняется вход...</div>
-      </div>
-    </form>
-
-    <div class="form-footer">
-      <a href="#" onclick="showForgotPassword()">Забыли пароль?</a>
-      <br><br>
-      <a href="#" onclick="showContactSupport()">Обратиться в поддержку</a>
-    </div>
-
-    <div class="demo-accounts">
-      <h4>Демо-аккаунты для тестирования</h4>
-      
-      <div class="demo-account">
-        <div>
-          <div class="role">Регистратура</div>
-          <div class="credentials">registry_user / registry123</div>
-        </div>
-        <button class="login-btn" onclick="fillDemoCredentials('registry_user', 'registry123')">Войти</button>
-      </div>
-
-      <div class="demo-account">
-        <div>
-          <div class="role">Медицинский отдел</div>
-          <div class="credentials">medical_user / medical123</div>
-        </div>
-        <button class="login-btn" onclick="fillDemoCredentials('medical_user', 'medical123')">Войти</button>
-      </div>
-
-      <div class="demo-account">
-        <div>
-          <div class="role">Цех</div>
-          <div class="credentials">workshop_user / workshop123</div>
-        </div>
-        <button class="login-btn" onclick="fillDemoCredentials('workshop_user', 'workshop123')">Войти</button>
-      </div>
-
-      <div class="demo-account">
-        <div>
-          <div class="role">Склад</div>
-          <div class="credentials">warehouse_user / warehouse123</div>
-        </div>
-        <button class="login-btn" onclick="fillDemoCredentials('warehouse_user', 'warehouse123')">Войти</button>
-      </div>
-
-      <div class="demo-account">
-        <div>
-          <div class="role">Администратор</div>
-          <div class="credentials">admin_user / admin123</div>
-        </div>
-        <button class="login-btn" onclick="fillDemoCredentials('admin_user', 'admin123')">Войти</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Заполнение демо-учетных данных
-    function fillDemoCredentials(username, password) {
-      document.getElementById('username').value = username;
-      document.getElementById('password').value = password;
-      document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-    }
-
-    // Показать форму восстановления пароля
-    function showForgotPassword() {
-      alert('Для восстановления пароля обратитесь к системному администратору или в службу поддержки.');
-    }
-
-    // Показать контакты поддержки
-    function showContactSupport() {
-      alert('Служба поддержки:\nТелефон: +996 XXX XXX XXX\nEmail: support@esso.kg');
-    }
-
-    // Обработка формы входа
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      
-      // Сброс ошибок
-      clearErrors();
-      
-      // Валидация
-      if (!username) {
-        showError('username', 'Введите имя пользователя');
-        return;
-      }
-      
-      if (!password) {
-        showError('password', 'Введите пароль');
-        return;
-      }
-      
-      // Показать индикатор загрузки
-      showLoading(true);
-      
-      try {
-        // Попытка входа через API
-        const response = await fetch('http://localhost:8000/api/auth/login/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ username, password })
+    <script>
+        // Функция для заполнения демо-аккаунтов
+        function fillDemoCredentials(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+        }
+        
+        // Обработка формы входа
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Простая валидация
+            if (username && password) {
+                // Показываем сообщение об успешном входе
+                alert('Добро пожаловать в систему, ' + username + '!');
+                
+                // Перенаправляем на дашборд
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Пожалуйста, заполните все поля');
+            }
         });
-        
-        if (response.ok) {
-          const data = await response.json();
-          
-          // Сохраняем токен
-          localStorage.setItem('esso_token', data.access);
-          localStorage.setItem('esso_user', JSON.stringify({
-            username: username,
-            role: data.user?.role || 'user'
-          }));
-          
-          // Перенаправляем на главную страницу
-          window.location.href = 'dashboard.html';
-          
-        } else {
-          const errorData = await response.json();
-          showError('password', errorData.detail || 'Неверное имя пользователя или пароль');
-        }
-        
-      } catch (error) {
-        console.error('Login error:', error);
-        
-        // Если API недоступен, используем демо-логин
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-          // Демо-логин для тестирования
-          if (validateDemoLogin(username, password)) {
-            localStorage.setItem('esso_token', 'demo_token_' + Date.now());
-            localStorage.setItem('esso_user', JSON.stringify({
-              username: username,
-              role: getDemoRole(username)
-            }));
-            
-            // Небольшая задержка для демонстрации
-            setTimeout(() => {
-              window.location.href = 'dashboard.html';
-            }, 1000);
-            
-            return;
-          }
-        }
-        
-        showError('password', 'Ошибка подключения к серверу');
-      } finally {
-        showLoading(false);
-      }
-    });
-
-    // Валидация демо-логина
-    function validateDemoLogin(username, password) {
-      const demoAccounts = {
-        'registry_user': 'registry123',
-        'medical_user': 'medical123',
-        'workshop_user': 'workshop123',
-        'warehouse_user': 'warehouse123',
-        'admin_user': 'admin123'
-      };
-      
-      return demoAccounts[username] === password;
-    }
-
-    // Получение роли для демо-пользователя
-    function getDemoRole(username) {
-      const roleMap = {
-        'registry_user': 'registry',
-        'medical_user': 'medical',
-        'workshop_user': 'workshop',
-        'warehouse_user': 'warehouse',
-        'admin_user': 'admin'
-      };
-      
-      return roleMap[username] || 'user';
-    }
-
-    // Показать ошибку
-    function showError(field, message) {
-      const errorElement = document.getElementById(field + 'Error');
-      const inputElement = document.getElementById(field);
-      
-      errorElement.textContent = message;
-      errorElement.classList.add('show');
-      inputElement.classList.add('error');
-      
-      inputElement.focus();
-    }
-
-    // Очистить ошибки
-    function clearErrors() {
-      document.querySelectorAll('.error-message').forEach(el => {
-        el.classList.remove('show');
-      });
-      
-      document.querySelectorAll('input').forEach(el => {
-        el.classList.remove('error');
-      });
-    }
-
-    // Показать/скрыть индикатор загрузки
-    function showLoading(show) {
-      const loading = document.getElementById('loading');
-      const loginBtn = document.getElementById('loginBtn');
-      
-      if (show) {
-        loading.classList.add('show');
-        loginBtn.disabled = true;
-        loginBtn.textContent = 'Вход...';
-      } else {
-        loading.classList.remove('show');
-        loginBtn.disabled = false;
-        loginBtn.textContent = 'Войти в систему';
-      }
-    }
-
-    // Автофокус на поле username при загрузке
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('username').focus();
-    });
-
-    // Обработка Enter в полях ввода
-    document.querySelectorAll('input').forEach(input => {
-      input.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-        }
-      });
-    });
-  </script>
+    </script>
 </body>
 </html>
