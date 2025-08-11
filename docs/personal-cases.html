@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>АИС ЕССО — Единый интерфейс</title>
+  <style>
+    :root { 
+      --bg:#f3f5f7; 
+      --card:#ffffff; 
+      --text:#1e2a3a; 
+      --muted:#6b778c; 
+      --primary:#2f4b7c; 
+      --primary-weak:#3f5e94; 
+      --border:#e2e8f0; 
+      --accent:#2f9e44; 
+      --danger:#e03131; 
+      --warning:#b08900; 
+      --shadow:0 2px 10px rgba(30,42,58,.08); 
+      --radius:12px; 
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .app{display:grid;grid-template-columns:260px 1fr;grid-template-rows:64px 1fr;grid-template-areas:"sidebar topbar" "sidebar main";height:100vh}
+
+    /* Topbar */
+    .topbar{grid-area:topbar;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:2}
+    .topbar .brand{display:flex;align-items:center;gap:12px;font-weight:600}
+    .topbar .crumbs{font-weight:400;opacity:.9}
+    .topbar .actions{display:flex;align-items:center;gap:16px}
+    .avatar{width:28px;height:28px;border-radius:50%;background:#fff;color:var(--primary);display:grid;place-items:center;font-weight:700}
+
+    /* Sidebar */
+    .sidebar{grid-area:sidebar;background:#fff;border-right:1px solid var(--border);padding:18px 12px;display:flex;flex-direction:column;gap:16px}
+    .sidebar .logo{display:flex;align-items:center;gap:12px;padding:8px;font-weight:700;color:var(--primary)}
+    .nav-group{margin-top:8px}
+    .nav-title{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding:8px 10px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:var(--text);cursor:pointer;user-select:none;transition:all .2s}
+    .nav-item:hover{background:#f1f4f8;transform:translateX(4px)}
+    .nav-item.active{background:#e9eef7;color:var(--primary);font-weight:600;box-shadow:0 2px 8px rgba(47,75,124,.15)}
+    .nav-item .icon{width:18px;height:18px;border-radius:4px;background:var(--primary);opacity:.15}
+
+    /* Main */
+    .main{grid-area:main;padding:22px;overflow:auto}
+    .page-title{font-size:22px;font-weight:700;margin:4px 0 16px}
+    .breadcrumbs{color:#dbe4ff;font-size:14px}
+    .breadcrumbs-wrap{margin-bottom:16px;color:var(--muted)}
+
+    /* Cards & tables */
+    .grid{display:grid;grid-template-columns:1fr;gap:18px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+    .card h3{margin:0 0 14px;font-size:16px}
+    .data-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .data-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;align-items:flex-start;transition:all .2s}
+    .data-card:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(30,42,58,.12)}
+    .data-card h4{margin:0;font-size:14px;color:var(--muted);font-weight:500}
+    .data-card .value{font-size:20px;font-weight:700;color:var(--text)}
+    .data-card .trend{font-size:12px;color:var(--accent)}
+
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:12px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
+    th{color:var(--muted);font-weight:600;background:#fafbfd}
+    tr:hover td{background:#f8fafc}
+    .actions-col{display:flex;gap:8px;flex-wrap:wrap}
+    .actions-col .btn{font-size:12px;padding:6px 10px}
+
+    /* Forms */
+    .form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .field{display:flex;flex-direction:column;gap:6px;grid-column:span 3}
+    .field.sm{grid-column:span 2} .field.md{grid-column:span 4} .field.lg{grid-column:span 6} .field.xl{grid-column:span 12}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-size:14px;outline:none;transition:border-color .2s}
+    input:focus,select:focus,textarea:focus{border-color:var(--primary)}
+    input[type="number"]{appearance:textfield}
+    textarea{min-height:84px;resize:vertical}
+    .btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn{padding:10px 14px;border-radius:10px;border:1px solid transparent;font-weight:600;cursor:pointer;user-select:none;transition:all .2s}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+    .btn.primary{background:var(--primary);color:#fff}
+    .btn.primary:hover{background:var(--primary-weak)}
+    .btn.ghost{background:#fff;border-color:var(--border);color:var(--text)}
+    .btn.danger{background:#fff;border-color:var(--danger);color:var(--danger)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    .pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px;gap:6px}
+    .pill.warn{color:#8a6d00;border-color:#e7d36b;background:#fffbe6}
+    .pill.ok{color:#0a6b2e;border-color:#9fd4ad;background:#f0fff4}
+    .pill.bad{color:#8a1f1f;border-color:#efb1b1;background:#fff5f5}
+
+    /* Toolbar */
+    .toolbar .field:last-child{margin-left:auto}
+    .toolbar .field:nth-last-child(2){margin-left:auto}
+
+    /* Views */
+    .view{display:none}
+    .view.active{display:block}
+
+    @media (max-width:1200px){.field{grid-column:span 6}.field.sm{grid-column:span 4}.field.md{grid-column:span 6}.field.lg{grid-column:span 12}}
+    @media (max-width:820px){.app{grid-template-columns:1fr;grid-template-rows:56px auto;grid-template-areas:"topbar" "main"}.sidebar{display:none}.topbar{border-bottom-left-radius:0;border-bottom-right-radius:0}}
+  </style>
+  <style>
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(4px)}
+    .modal{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 20px 60px rgba(30,42,58,.2);padding:18px;max-width:520px;width:92%;animation:modalSlideIn .3s ease-out}
+    .modal h4{margin:0 0 8px}
+    .modal .muted{color:var(--muted);font-size:14px;margin-bottom:14px}
+    .modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+    
+    @keyframes modalSlideIn{
+      from{opacity:0;transform:translateY(-20px) scale(.95)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><div class="icon" style="width:32px;height:32px;border-radius:50%;opacity:.3"></div>АИС ЕССО</div>
+    <div class="nav-group">
+      <div class="nav-title">Операции</div>
+      <div class="nav-item active" data-nav="cases-list"><div class="icon"></div> Личные дела</div>
+      <div class="nav-item" data-nav="orders-list"><div class="icon"></div> Заказы</div>
+      <div class="nav-item" data-nav="invoices-list"><div class="icon"></div> Накладные</div>
+      <div class="nav-item" data-nav="warehouse-stock"><div class="icon"></div> Склад</div>
+      <div class="nav-item" data-nav="warehouse-issues"><div class="icon"></div> Выдача</div>
+      <div class="nav-item"><div class="icon"></div> Отчёты</div>
+      <div class="nav-item"><div class="icon"></div> Администрирование</div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="brand"><span class="crumbs" id="crumbs">/ Личные дела</span></div>
+    <div class="actions"><span class="muted">Айжана Сайрабаева</span><div class="avatar">A</div></div>
+  </header>
+
+  <main class="main">
+    <div class="breadcrumbs-wrap">Главная <span id="bcCurrent">/ Личные дела</span></div>
+
+    <!-- =========== ЛИЧНЫЕ ДЕЛА: СПИСОК =========== -->
+    <section id="cases-list" class="view active">
+      <div class="page-title">Личные дела</div>
+      <div class="data-cards">
+        <div class="data-card"><h4>Всего дел</h4><div class="value">126</div><div class="trend">+5 за неделю</div></div>
+        <div class="data-card"><h4>Активных</h4><div class="value">102</div><div class="trend">+3 за неделю</div></div>
+        <div class="data-card"><h4>Закрытых</h4><div class="value">24</div><div class="trend">+2 за неделю</div></div>
+        <div class="data-card"><h4>Срочные</h4><div class="value">8</div><div class="trend">Без изменений</div></div>
+      </div>
+      <section class="card" style="margin-top:20px;">
+        <h3>Реестр личных дел</h3>
+        <div class="btn-row" style="margin-bottom:12px"><button class="btn primary" data-nav="case-create">+ Новое личное дело</button></div>
+        <table>
+          <thead>
+            <tr>
+              <th>№ дела</th><th>ПИН</th><th>ФИО</th><th>Дата рождения</th><th>Группа</th><th>ИПРА</th><th>Последний заказ</th><th>Статус</th><th>Обновлено</th><th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>2025-0001</strong></td><td>1230****4567</td><td>Иванов Иван Иванович</td><td>12.03.1980</td><td><span class="pill warn">II</span></td><td>ИПРА №45 от 01.02.2025</td><td>Протез бедра — в работе</td><td><span class="pill ok">Активно</span></td><td>08.08.2025 10:12</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="case-view">Просмотр</button>
+                <button class="btn" data-nav="case-create">Редактировать</button>
+                <button class="btn" data-nav="orders-list">Создать заказ</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>2025-0002</strong></td><td>2340****5678</td><td>Петрова Анна Сергеевна</td><td>25.07.1975</td><td><span class="pill warn">III</span></td><td>ИПРА №67 от 15.03.2025</td><td>Ортопедическая обувь — готово</td><td><span class="pill ok">Активно</span></td><td>07.08.2025 14:30</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="case-view">Просмотр</button>
+                <button class="btn" data-nav="case-create">Редактировать</button>
+                <button class="btn" data-nav="orders-list">Создать заказ</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>2025-0003</strong></td><td>3450****6789</td><td>Сидоров Михаил Петрович</td><td>08.11.1982</td><td><span class="pill warn">I</span></td><td>ИПРА №89 от 22.01.2025</td><td>Отто Бок — в работе</td><td><span class="pill ok">Активно</span></td><td>06.08.2025 09:15</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="case-view">Просмотр</button>
+                <button class="btn" data-nav="case-create">Редактировать</button>
+                <button class="btn" data-nav="orders-list">Создать заказ</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>2025-0004</strong></td><td>4560****7890</td><td>Козлова Елена Викторовна</td><td>19.05.1968</td><td><span class="pill warn">II</span></td><td>ИПРА №12 от 10.04.2025</td><td>Ремонт протеза — завершён</td><td><span class="pill bad">Закрыто</span></td><td>05.08.2025 16:45</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="case-view">Просмотр</button>
+                <button class="btn" data-nav="case-create">Редактировать</button>
+                <button class="btn" data-nav="orders-list">Создать заказ</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>2025-0005</strong></td><td>5670****8901</td><td>Морозов Дмитрий Александрович</td><td>03.12.1990</td><td><span class="pill warn">III</span></td><td>ИПРА №34 от 28.02.2025</td><td>Протез руки — ожидает</td><td><span class="pill ok">Активно</span></td><td>04.08.2025 11:20</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="case-view">Просмотр</button>
+                <button class="btn" data-nav="case-create">Редактировать</button>
+                <button class="btn" data-nav="orders-list">Создать заказ</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- =========== ЛИЧНОЕ ДЕЛО: ДОБАВЛЕНИЕ/РЕДАКТИРОВАНИЕ =========== -->
+    <section id="case-view" class="view">
+      <div class="page-title">Карточка личного дела</div>
+      <section class="card">
+        <h3>Основные данные</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>№ дела</label><input value="2025-0001" disabled></div>
+          <div class="field sm"><label>ПИН</label><input value="1230****4567" disabled></div>
+          <div class="field md"><label>ФИО</label><input value="Иванов Иван Иванович" disabled></div>
+          <div class="field sm"><label>Дата рождения</label><input value="12.03.1980" disabled></div>
+          <div class="field sm"><label>Группа</label><input value="II" disabled></div>
+          <div class="field lg"><label>Адрес</label><input value="г. Бишкек, ..." disabled></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px"><button class="btn" data-nav="case-create">Редактировать</button><button class="btn ghost" data-nav="cases-list">Назад к списку</button></div>
+      </section>
+    </section>
+
+    <section id="case-create" class="view">
+      <div class="page-title">Добавление личного дела</div>
+      <section class="card">
+        <h3>Личные данные</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>ПИН *</label><div class="btn-row"><input type="text" placeholder="Введите ПИН" style="flex:1"/><button class="btn ghost">Проверить ПИН</button></div></div>
+          <div class="field sm"><label>Фамилия *</label><input type="text" placeholder="Введите" /></div>
+          <div class="field sm"><label>Имя *</label><input type="text" placeholder="Введите" /></div>
+          <div class="field sm"><label>Отчество</label><input type="text" placeholder="Введите" /></div>
+          <div class="field sm"><label>Дата рождения *</label><input type="date" /></div>
+          <div class="field sm"><label>Пол *</label><select><option>Выберите</option><option>Мужской</option><option>Женский</option></select></div>
+          <div class="field lg"><label>Адрес регистрации *</label><input type="text" placeholder="Область, район, город/село, улица, дом, кв." /></div>
+          <div class="field lg"><label>Адрес проживания</label><input type="text" placeholder="Если отличается от регистрации" /></div>
+        </div>
+      </section>
+      <section class="card">
+        <h3>Документы</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>Тип документа *</label><select><option>Паспорт</option><option>Свидетельство о рождении</option><option>Иной документ</option></select></div>
+          <div class="field sm"><label>Серия</label><input type="text" placeholder="AA" /></div>
+          <div class="field sm"><label>Номер *</label><input type="text" placeholder="0000000" /></div>
+          <div class="field sm"><label>Кем выдан</label><input type="text" placeholder="Орган выдачи" /></div>
+          <div class="field sm"><label>Дата выдачи</label><input type="date" /></div>
+          <div class="field sm"><label>Срок действия</label><input type="date" /></div>
+        </div>
+      </section>
+      <section class="card">
+        <h3>Инвалидность и ИПРА</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>Группа инвалидности *</label><select><option>Не установлена</option><option>I</option><option>II</option><option>III</option><option>Ребёнок-инвалид</option></select></div>
+          <div class="field sm"><label>МСЭК №</label><input type="text" placeholder="Номер справки" /></div>
+          <div class="field sm"><label>Дата МСЭК</label><input type="date" /></div>
+          <div class="field sm"><label>ИПРА №</label><input type="text" placeholder="Номер ИПРА" /></div>
+          <div class="field sm"><label>Дата ИПРА</label><input type="date" /></div>
+          <div class="field sm"><label>Срок действия ИПРА</label><input type="date" /></div>
+          <div class="field lg"><label>Перечень рекомендованных ТСР (из ИПРА)</label><textarea placeholder="Например: протез бедра, ортопедическая обувь ..."></textarea></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px"><button class="btn ghost" data-nav="cases-list">Отмена</button><button class="btn primary" data-nav="cases-list">Сохранить дело</button></div>
+      </section>
+    </section>
+
+    <!-- =========== ЗАКАЗЫ: СПИСОК =========== -->
+    <section id="orders-list" class="view">
+      <div class="page-title">Заказы</div>
+      <div class="data-cards">
+        <div class="data-card"><h4>Всего заказов</h4><div class="value">412</div><div class="trend">+12 за неделю</div></div>
+        <div class="data-card"><h4>В работе</h4><div class="value">156</div><div class="trend">+6 за неделю</div></div>
+        <div class="data-card"><h4>Готово к передаче</h4><div class="value">34</div><div class="trend" style="color:var(--danger)">−3 за неделю</div></div>
+        <div class="data-card"><h4>Просрочено</h4><div class="value">11</div><div class="trend" style="color:var(--danger)">+2 за неделю</div></div>
+      </div>
+      <section class="card" style="margin-top:20px;">
+        <h3>Фильтры</h3>
+        <div class="form-grid toolbar">
+          <div class="field"><label>Поиск (№ заказа / ПИН / ФИО)</label><input type="text" placeholder="Введите запрос" /></div>
+          <div class="field sm"><label>Тип</label><select><option>Все</option><option>Протез</option><option>Ортопедическая обувь</option><option>Отто Бок</option><option>Ремонт</option><option>Готовое ТСР</option></select></div>
+          <div class="field sm"><label>Статус</label><select><option>Все</option><option>Черновик</option><option>В работе</option><option>Ожидает примерки</option><option>На доработке</option><option>Готов к передаче</option><option>Передан на склад</option><option>Выдан</option><option>Отменён</option></select></div>
+          <div class="field sm"><label>Срочность</label><select><option>Все</option><option>Обычный</option><option>Срочный</option></select></div>
+          <div class="field sm"><label>Оплата</label><select><option>Все</option><option>Бесплатно</option><option>Частичная оплата</option><option>Платно</option></select></div>
+          <div class="field sm"><label>Цех</label><select><option>Все</option><option>Протезный</option><option>Обувной</option><option>Отто Бок</option><option>Ремонт</option></select></div>
+          <div class="field sm"><label>Создан с</label><input type="date" /></div>
+          <div class="field sm"><label>по</label><input type="date" /></div>
+          <div class="field sm"><label>&nbsp;</label><button class="btn ghost">Сбросить</button></div>
+          <div class="field sm"><label>&nbsp;</label><button class="btn primary">Применить</button></div>
+          <div class="field sm" style="margin-left:auto"><label>&nbsp;</label><button class="btn primary" data-nav="order-create">+ Новый заказ</button></div>
+        </div>
+      </section>
+      <section class="card">
+        <h3>Реестр заказов</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>№ заказа</th><th>Личное дело</th><th>Тип</th><th>Изделие</th><th>Цех</th><th>Срочность</th><th>Статус</th><th>Создан</th><th>План. изготов.</th><th>Сумма</th><th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ORD-2025-0156</strong></td><td>2025-0001 / Иванов И.И.</td><td>Протез</td><td>Протез бедра</td><td>Протезный</td><td><span class="pill warn">Срочный</span></td><td><span class="pill warn">В работе</span></td><td>01.08.2025</td><td>20.08.2025</td><td>0 сом</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="order-view">Просмотр</button>
+                <button class="btn" data-nav="order-create">Редактировать</button>
+                <button class="btn" data-nav="invoices-list">Накладная</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>ORD-2025-0157</strong></td><td>2025-0002 / Петрова А.С.</td><td>Обувь</td><td>Ортопедическая обувь</td><td>Обувной</td><td><span class="pill ok">Обычный</span></td><td><span class="pill ok">Готов к передаче</span></td><td>02.08.2025</td><td>15.08.2025</td><td>0 сом</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="order-view">Просмотр</button>
+                <button class="btn" data-nav="order-create">Редактировать</button>
+                <button class="btn" data-nav="invoices-list">Накладная</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>ORD-2025-0158</strong></td><td>2025-0003 / Сидоров М.П.</td><td>Отто Бок</td><td>Отто Бок</td><td>Отто Бок</td><td><span class="pill warn">Срочный</span></td><td><span class="pill warn">Ожидает примерки</span></td><td>03.08.2025</td><td>25.08.2025</td><td>0 сом</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="order-view">Просмотр</button>
+                <button class="btn" data-nav="order-create">Редактировать</button>
+                <button class="btn" data-nav="invoices-list">Накладная</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>ORD-2025-0159</strong></td><td>2025-0004 / Козлова Е.В.</td><td>Ремонт</td><td>Ремонт протеза</td><td>Ремонт</td><td><span class="pill ok">Обычный</span></td><td><span class="pill ok">Завершён</span></td><td>04.08.2025</td><td>10.08.2025</td><td>0 сом</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="order-view">Просмотр</button>
+                <button class="btn" data-nav="order-create">Редактировать</button>
+                <button class="btn" data-nav="invoices-list">Накладная</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>ORD-2025-0160</strong></td><td>2025-0005 / Морозов Д.А.</td><td>Протез</td><td>Протез руки</td><td>Протезный</td><td><span class="pill ok">Обычный</span></td><td><span class="pill warn">На доработке</span></td><td>05.08.2025</td><td>30.08.2025</td><td>0 сом</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="order-view">Просмотр</button>
+                <button class="btn" data-nav="order-create">Редактировать</button>
+                <button class="btn" data-nav="invoices-list">Накладная</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- =========== ЗАКАЗ: ПРОСМОТР =========== -->
+    <section id="order-view" class="view">
+      <div class="page-title">Просмотр заказа</div>
+      <section class="card">
+        <h3>Основная информация</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>№ заказа</label><input value="ORD-2025-0156" disabled></div>
+          <div class="field sm"><label>Личное дело</label><input value="2025-0001 / Иванов Иван Иванович" disabled></div>
+          <div class="field sm"><label>Тип изделия</label><input value="Протез" disabled></div>
+          <div class="field md"><label>Наименование</label><input value="Протез бедра" disabled></div>
+          <div class="field sm"><label>Цех</label><input value="Протезный" disabled></div>
+          <div class="field sm"><label>Срочность</label><input value="Срочный" disabled></div>
+          <div class="field sm"><label>Статус</label><input value="В работе" disabled></div>
+          <div class="field sm"><label>Дата создания</label><input value="01.08.2025" disabled></div>
+          <div class="field sm"><label>Плановая дата</label><input value="20.08.2025" disabled></div>
+          <div class="field sm"><label>Сумма</label><input value="0 сом" disabled></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn" data-nav="order-create">Редактировать</button>
+          <button class="btn ghost" data-nav="orders-list">Назад к списку</button>
+        </div>
+      </section>
+      
+      <section class="card">
+        <h3>Технические характеристики</h3>
+        <div class="form-grid">
+          <div class="field md"><label>Материал</label><input value="Титан + пластик" disabled></div>
+          <div class="field md"><label>Цвет</label><input value="Бежевый" disabled></div>
+          <div class="field sm"><label>Размер</label><input value="L" disabled></div>
+          <div class="field lg"><label>Особые требования</label><textarea disabled>Учитывать особенности походки пациента</textarea></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>История изменений</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Дата</th><th>Действие</th><th>Пользователь</th><th>Комментарий</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01.08.2025 10:00</td><td>Создан заказ</td><td>registry_user</td><td>Заказ создан на основании ИПРА</td>
+            </tr>
+            <tr>
+              <td>01.08.2025 14:30</td><td>Передан в работу</td><td>workshop_user</td><td>Принят в производство</td>
+            </tr>
+            <tr>
+              <td>03.08.2025 09:15</td><td>Начато изготовление</td><td>workshop_user</td><td>Начата работа над протезом</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- =========== ЗАКАЗ: СОЗДАНИЕ/РЕДАКТИРОВАНИЕ =========== -->
+    <section id="order-create" class="view">
+      <div class="page-title">Создание заказа</div>
+      <section class="card">
+        <h3>Основная информация</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>Личное дело *</label><div class="btn-row"><input type="text" placeholder="Выберите личное дело" style="flex:1"/><button class="btn ghost">Выбрать</button></div></div>
+          <div class="field sm"><label>Тип изделия *</label><select><option>Выберите тип</option><option>Протез</option><option>Ортопедическая обувь</option><option>Отто Бок</option><option>Ремонт</option><option>Готовое ТСР</option></select></div>
+          <div class="field md"><label>Наименование изделия *</label><input type="text" placeholder="Введите название" /></div>
+          <div class="field sm"><label>Цех *</label><select><option>Выберите цех</option><option>Протезный</option><option>Обувной</option><option>Отто Бок</option><option>Ремонт</option></select></div>
+          <div class="field sm"><label>Срочность</label><select><option>Обычный</option><option>Срочный</option></select></div>
+          <div class="field sm"><label>Плановая дата *</label><input type="date" /></div>
+          <div class="field sm"><label>Сумма</label><input type="number" placeholder="0" /></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Технические характеристики</h3>
+        <div class="form-grid">
+          <div class="field md"><label>Материал</label><input type="text" placeholder="Введите материал" /></div>
+          <div class="field sm"><label>Цвет</label><input type="text" placeholder="Введите цвет" /></div>
+          <div class="field sm"><label>Размер</label><select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select></div>
+          <div class="field lg"><label>Особые требования</label><textarea placeholder="Укажите особые требования или пожелания"></textarea></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn primary">Сохранить заказ</button>
+          <button class="btn ghost" data-nav="orders-list">Отмена</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- =========== НАКЛАДНЫЕ: СПИСОК =========== -->
+    <section id="invoices-list" class="view">
+      <div class="page-title">Накладные</div>
+      <div class="data-cards">
+        <div class="data-card"><h4>Всего накладных</h4><div class="value">89</div><div class="trend">+7 за неделю</div></div>
+        <div class="data-card"><h4>Ожидают выдачи</h4><div class="value">23</div><div class="trend">+3 за неделю</div></div>
+        <div class="data-card"><h4>Выдано</h4><div class="value">66</div><div class="trend">+4 за неделю</div></div>
+        <div class="data-card"><h4>Просрочено</h4><div class="value">5</div><div class="trend" style="color:var(--danger)">+1 за неделю</div></div>
+      </div>
+      
+      <section class="card" style="margin-top:20px;">
+        <h3>Фильтры</h3>
+        <div class="form-grid toolbar">
+          <div class="field"><label>Поиск (№ накладной / № заказа / ФИО)</label><input type="text" placeholder="Введите запрос" /></div>
+          <div class="field sm"><label>Статус</label><select><option>Все</option><option>Ожидает выдачи</option><option>Выдано</option><option>Просрочено</option></select></div>
+          <div class="field sm"><label>Тип изделия</label><select><option>Все</option><option>Протез</option><option>Ортопедическая обувь</option><option>Отто Бок</option><option>Ремонт</option></select></div>
+          <div class="field sm"><label>Создана с</label><input type="date" /></div>
+          <div class="field sm"><label>по</label><input type="date" /></div>
+          <div class="field sm"><label>&nbsp;</label><button class="btn ghost">Сбросить</button></div>
+          <div class="field sm"><label>&nbsp;</label><button class="btn primary">Применить</button></div>
+          <div class="field sm" style="margin-left:auto"><label>&nbsp;</label><button class="btn primary" data-nav="invoice-create">+ Новая накладная</button></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Реестр накладных</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>№ накладной</th><th>№ заказа</th><th>Личное дело</th><th>Изделие</th><th>Статус</th><th>Создана</th><th>План выдачи</th><th>Факт выдачи</th><th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>INV-2025-0089</strong></td><td>ORD-2025-0157</td><td>2025-0002 / Петрова А.С.</td><td>Ортопедическая обувь</td><td><span class="pill ok">Готово к выдаче</span></td><td>15.08.2025</td><td>20.08.2025</td><td>-</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="invoice-view">Просмотр</button>
+                <button class="btn" data-nav="invoice-create">Редактировать</button>
+                <button class="btn primary">Выдать</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>INV-2025-0090</strong></td><td>ORD-2025-0156</td><td>2025-0001 / Иванов И.И.</td><td>Протез бедра</td><td><span class="pill warn">В работе</span></td><td>10.08.2025</td><td>25.08.2025</td><td>-</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="invoice-view">Просмотр</button>
+                <button class="btn" data-nav="invoice-create">Редактировать</button>
+                <button class="btn" disabled>Выдать</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>INV-2025-0091</strong></td><td>ORD-2025-0159</td><td>2025-0004 / Козлова Е.В.</td><td>Ремонт протеза</td><td><span class="pill ok">Выдано</span></td><td>10.08.2025</td><td>15.08.2025</td><td>12.08.2025</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="invoice-view">Просмотр</button>
+                <button class="btn" data-nav="invoice-create">Редактировать</button>
+                <button class="btn" disabled>Выдано</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- =========== НАКЛАДНАЯ: ПРОСМОТР =========== -->
+    <section id="invoice-view" class="view">
+      <div class="page-title">Просмотр накладной</div>
+      <section class="card">
+        <h3>Основная информация</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>№ накладной</label><input value="INV-2025-0089" disabled></div>
+          <div class="field sm"><label>№ заказа</label><input value="ORD-2025-0157" disabled></div>
+          <div class="field md"><label>Личное дело</label><input value="2025-0002 / Петрова Анна Сергеевна" disabled></div>
+          <div class="field md"><label>Изделие</label><input value="Ортопедическая обувь" disabled></div>
+          <div class="field sm"><label>Статус</label><input value="Готово к выдаче" disabled></div>
+          <div class="field sm"><label>Дата создания</label><input value="15.08.2025" disabled></div>
+          <div class="field sm"><label>План выдачи</label><input value="20.08.2025" disabled></div>
+          <div class="field sm"><label>Факт выдачи</label><input value="-" disabled></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn" data-nav="invoice-create">Редактировать</button>
+          <button class="btn ghost" data-nav="invoices-list">Назад к списку</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- =========== НАКЛАДНАЯ: СОЗДАНИЕ/РЕДАКТИРОВАНИЕ =========== -->
+    <section id="invoice-create" class="view">
+      <div class="page-title">Создание накладной</div>
+      <section class="card">
+        <h3>Основная информация</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>№ заказа *</label><div class="btn-row"><input type="text" placeholder="Выберите заказ" style="flex:1"/><button class="btn ghost">Выбрать</button></div></div>
+          <div class="field sm"><label>Плановая дата выдачи *</label><input type="date" /></div>
+          <div class="field lg"><label>Примечания</label><textarea placeholder="Дополнительная информация"></textarea></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn primary">Создать накладную</button>
+          <button class="btn ghost" data-nav="invoices-list">Отмена</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- =========== СКЛАД: ЗАПАСЫ =========== -->
+    <section id="warehouse-stock" class="view">
+      <div class="page-title">Складские запасы</div>
+      <div class="data-cards">
+        <div class="data-card"><h4>Всего позиций</h4><div class="value">1,247</div><div class="trend">+23 за неделю</div></div>
+        <div class="data-card"><h4>В наличии</h4><div class="value">892</div><div class="trend">+15 за неделю</div></div>
+        <div class="data-card"><h4>Критический запас</h4><div class="value">34</div><div class="trend" style="color:var(--danger)">+5 за неделю</div></div>
+        <div class="data-card"><h4>Списано</h4><div class="value">156</div><div class="trend">+3 за неделю</div></div>
+      </div>
+      
+      <section class="card" style="margin-top:20px;">
+        <h3>Фильтры</h3>
+        <div class="form-grid toolbar">
+          <div class="field"><label>Поиск (наименование / артикул / категория)</label><input type="text" placeholder="Введите запрос" /></div>
+          <div class="field sm"><label>Категория</label><select><option>Все</option><option>Протезы</option><option>Ортопедия</option><option>Материалы</option><option>Инструменты</option><option>Расходники</option></select></div>
+          <div class="field sm"><label>Статус</label><select><option>Все</option><option>В наличии</option><option>Критический запас</option><option>Отсутствует</option></select></div>
+          <div class="field sm"><label>Склад</label><select><option>Все</option><option>Основной</option><option>Протезный</option><option>Обувной</option></select></div>
+          <div class="field sm"><label>&nbsp;</label><button class="btn ghost">Сбросить</button></div>
+          <div class="field sm"><label>&nbsp;</label><button class="btn primary">Применить</button></div>
+          <div class="field sm" style="margin-left:auto"><label>&nbsp;</label><button class="btn primary" data-nav="stock-create">+ Добавить позицию</button></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Реестр складских позиций</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Артикул</th><th>Наименование</th><th>Категория</th><th>Количество</th><th>Ед. изм.</th><th>Склад</th><th>Статус</th><th>Последнее обновление</th><th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>PROT-001</strong></td><td>Протез бедра титановый</td><td>Протезы</td><td>15</td><td>шт.</td><td>Протезный</td><td><span class="pill ok">В наличии</span></td><td>08.08.2025 14:30</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="stock-view">Просмотр</button>
+                <button class="btn" data-nav="stock-create">Редактировать</button>
+                <button class="btn" data-nav="warehouse-issues">Выдать</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>SHOE-045</strong></td><td>Ортопедическая обувь размер 42</td><td>Ортопедия</td><td>8</td><td>пар</td><td>Обувной</td><td><span class="pill ok">В наличии</span></td><td>07.08.2025 11:15</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="stock-view">Просмотр</button>
+                <button class="btn" data-nav="stock-create">Редактировать</button>
+                <button class="btn" data-nav="warehouse-issues">Выдать</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>MAT-123</strong></td><td>Титан листовой 2мм</td><td>Материалы</td><td>2</td><td>кг</td><td>Основной</td><td><span class="pill warn">Критический запас</span></td><td>06.08.2025 16:45</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="stock-view">Просмотр</button>
+                <button class="btn" data-nav="stock-create">Редактировать</button>
+                <button class="btn" data-nav="warehouse-issues">Выдать</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- =========== СКЛАД: ВЫДАЧА =========== -->
+    <section id="warehouse-issues" class="view">
+      <div class="page-title">Выдача со склада</div>
+      <div class="data-cards">
+        <div class="data-card"><h4>Всего выдач</h4><div class="value">456</div><div class="trend">+28 за неделю</div></div>
+        <div class="data-card"><h4>За неделю</h4><div class="value">28</div><div class="trend">+5 за день</div></div>
+        <div class="data-card"><h4>Ожидают выдачи</h4><div class="value">12</div><div class="trend">+2 за день</div></div>
+        <div class="data-card"><h4>Выдано сегодня</h4><div class="value">8</div><div class="trend">+3 за день</div></div>
+      </div>
+      
+      <section class="card" style="margin-top:20px;">
+        <h3>Фильтры</h3>
+        <div class="form-grid toolbar">
+          <div class="field"><label>Поиск (№ выдачи / получатель / позиция)</label><input type="text" placeholder="Введите запрос" /></div>
+          <div class="field sm"><label>Статус</label><select><option>Все</option><option>Ожидает выдачи</option><option>Выдано</option><option>Отменено</option></select></div>
+          <div class="field sm"><label>Склад</label><select><option>Все</option><option>Основной</option><option>Протезный</option><option>Обувной</option></select></div>
+          <div class="field sm"><label>Дата выдачи с</label><input type="date" /></div>
+          <div class="field sm"><label>по</label><input type="date" /></div>
+          <div class="field sm"><label>&nbsp;</label><button class="btn ghost">Сбросить</button></div>
+          <div class="field sm"><label>&nbsp;</label><button class="btn primary">Применить</button></div>
+          <div class="field sm" style="margin-left:auto"><label>&nbsp;</label><button class="btn primary" data-nav="issue-create">+ Новая выдача</button></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Реестр выдач</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>№ выдачи</th><th>Дата</th><th>Получатель</th><th>Позиция</th><th>Количество</th><th>Склад</th><th>Статус</th><th>Выдал</th><th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ISS-2025-0234</strong></td><td>08.08.2025</td><td>Иванов И.И.</td><td>Протез бедра</td><td>1 шт.</td><td>Протезный</td><td><span class="pill ok">Выдано</span></td><td>warehouse_user</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="issue-view">Просмотр</button>
+                <button class="btn" data-nav="issue-create">Редактировать</button>
+                <button class="btn" disabled>Выдано</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>ISS-2025-0235</strong></td><td>08.08.2025</td><td>Петрова А.С.</td><td>Ортопедическая обувь</td><td>1 пара</td><td>Обувной</td><td><span class="pill warn">Ожидает выдачи</span></td><td>-</td>
+              <td class="actions-col">
+                <button class="btn" data-nav="issue-view">Просмотр</button>
+                <button class="btn" data-nav="issue-create">Редактировать</button>
+                <button class="btn primary">Выдать</button>
+                <button class="btn danger" data-action="delete">Удалить</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- =========== СКЛАД: ПРОСМОТР ПОЗИЦИИ =========== -->
+    <section id="stock-view" class="view">
+      <div class="page-title">Просмотр складской позиции</div>
+      <section class="card">
+        <h3>Основная информация</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>Артикул</label><input value="PROT-001" disabled></div>
+          <div class="field md"><label>Наименование</label><input value="Протез бедра титановый" disabled></div>
+          <div class="field sm"><label>Категория</label><input value="Протезы" disabled></div>
+          <div class="field sm"><label>Количество</label><input value="15" disabled></div>
+          <div class="field sm"><label>Единица измерения</label><input value="шт." disabled></div>
+          <div class="field sm"><label>Склад</label><input value="Протезный" disabled></div>
+          <div class="field sm"><label>Статус</label><input value="В наличии" disabled></div>
+          <div class="field sm"><label>Последнее обновление</label><input value="08.08.2025 14:30" disabled></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn" data-nav="stock-create">Редактировать</button>
+          <button class="btn ghost" data-nav="warehouse-stock">Назад к списку</button>
+        </div>
+      </section>
+      
+      <section class="card">
+        <h3>Технические характеристики</h3>
+        <div class="form-grid">
+          <div class="field md"><label>Материал</label><input value="Титан + пластик" disabled></div>
+          <div class="field md"><label>Размеры</label><input value="L, XL, XXL" disabled></div>
+          <div class="field md"><label>Цвет</label><input value="Бежевый, чёрный" disabled></div>
+          <div class="field lg"><label>Описание</label><textarea disabled>Протез бедра с титановым каркасом и пластиковым покрытием. Подходит для пациентов с ампутацией бедра.</textarea></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>История движений</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Дата</th><th>Операция</th><th>Количество</th><th>Остаток</th><th>Пользователь</th><th>Комментарий</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>08.08.2025 14:30</td><td>Поступление</td><td>+5</td><td>15</td><td>warehouse_user</td><td>Новая партия</td>
+            </tr>
+            <tr>
+              <td>05.08.2025 11:15</td><td>Выдача</td><td>-1</td><td>10</td><td>warehouse_user</td><td>Выдано Иванову И.И.</td>
+            </tr>
+            <tr>
+              <td>01.08.2025 09:45</td><td>Поступление</td><td>+10</td><td>11</td><td>warehouse_user</td><td>Основное поступление</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- =========== СКЛАД: СОЗДАНИЕ/РЕДАКТИРОВАНИЕ ПОЗИЦИИ =========== -->
+    <section id="stock-create" class="view">
+      <div class="page-title">Добавление складской позиции</div>
+      <section class="card">
+        <h3>Основная информация</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>Артикул *</label><input type="text" placeholder="Введите артикул" /></div>
+          <div class="field md"><label>Наименование *</label><input type="text" placeholder="Введите название" /></div>
+          <div class="field sm"><label>Категория *</label><select><option>Выберите категорию</option><option>Протезы</option><option>Ортопедия</option><option>Материалы</option><option>Инструменты</option><option>Расходники</option></select></div>
+          <div class="field sm"><label>Количество *</label><input type="number" placeholder="0" /></div>
+          <div class="field sm"><label>Единица измерения *</label><select><option>шт.</option><option>пар</option><option>кг</option><option>м</option><option>л</option><option>компл.</option></select></div>
+          <div class="field sm"><label>Склад *</label><select><option>Выберите склад</option><option>Основной</option><option>Протезный</option><option>Обувной</option></select></div>
+          <div class="field sm"><label>Минимальный запас</label><input type="number" placeholder="0" /></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Технические характеристики</h3>
+        <div class="form-grid">
+          <div class="field md"><label>Материал</label><input type="text" placeholder="Введите материал" /></div>
+          <div class="field md"><label>Размеры</label><input type="text" placeholder="Введите размеры" /></div>
+          <div class="field md"><label>Цвет</label><input type="text" placeholder="Введите цвет" /></div>
+          <div class="field lg"><label>Описание</label><textarea placeholder="Подробное описание позиции"></textarea></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn primary">Сохранить позицию</button>
+          <button class="btn ghost" data-nav="warehouse-stock">Отмена</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- =========== СКЛАД: ПРОСМОТР ВЫДАЧИ =========== -->
+    <section id="issue-view" class="view">
+      <div class="page-title">Просмотр выдачи</div>
+      <section class="card">
+        <h3>Основная информация</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>№ выдачи</label><input value="ISS-2025-0234" disabled></div>
+          <div class="field sm"><label>Дата</label><input value="08.08.2025" disabled></div>
+          <div class="field md"><label>Получатель</label><input value="Иванов Иван Иванович" disabled></div>
+          <div class="field md"><label>Позиция</label><input value="Протез бедра" disabled></div>
+          <div class="field sm"><label>Количество</label><input value="1 шт." disabled></div>
+          <div class="field sm"><label>Склад</label><input value="Протезный" disabled></div>
+          <div class="field sm"><label>Статус</label><input value="Выдано" disabled></div>
+          <div class="field sm"><label>Выдал</label><input value="warehouse_user" disabled></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn" data-nav="issue-create">Редактировать</button>
+          <button class="btn ghost" data-nav="warehouse-issues">Назад к списку</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- =========== СКЛАД: СОЗДАНИЕ ВЫДАЧИ =========== -->
+    <section id="issue-create" class="view">
+      <div class="page-title">Создание выдачи</div>
+      <section class="card">
+        <h3>Основная информация</h3>
+        <div class="form-grid">
+          <div class="field sm"><label>Получатель *</label><div class="btn-row"><input type="text" placeholder="Выберите получателя" style="flex:1"/><button class="btn ghost">Выбрать</button></div></div>
+          <div class="field sm"><label>Складская позиция *</label><div class="btn-row"><input type="text" placeholder="Выберите позицию" style="flex:1"/><button class="btn ghost">Выбрать</button></div></div>
+          <div class="field sm"><label>Количество *</label><input type="number" placeholder="1" min="1" /></div>
+          <div class="field sm"><label>Дата выдачи</label><input type="date" /></div>
+          <div class="field lg"><label>Примечания</label><textarea placeholder="Дополнительная информация"></textarea></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn primary">Создать выдачу</button>
+          <button class="btn ghost" data-nav="warehouse-issues">Отмена</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- =========== МОДАЛ УДАЛЕНИЯ =========== -->
+    <div id="modalDelete" class="modal-backdrop">
+      <div class="modal">
+        <h4>Удалить запись?</h4>
+        <div class="muted">Это действие нельзя отменить. Вы уверены, что хотите удалить выбранную запись?</div>
+        <div class="row">
+          <button class="btn ghost" id="cancelDelete">Отмена</button>
+          <button class="btn danger" id="confirmDelete">Удалить</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Простая маршрутизация по data-nav
+  const views = document.querySelectorAll('.view');
+  const navItems = document.querySelectorAll('.nav-item[data-nav]');
+  const crumbsEl = document.getElementById('crumbs');
+  const bcCurrent = document.getElementById('bcCurrent');
+
+  function titleFor(id){
+    switch(id){
+      case 'cases-list': return 'Личные дела';
+      case 'case-view': return 'Личные дела / Просмотр';
+      case 'case-create': return 'Личные дела / Добавление';
+      case 'orders-list': return 'Заказы';
+      case 'order-view': return 'Заказы / Просмотр';
+      case 'order-create': return 'Заказы / Добавление';
+      case 'invoices-list': return 'Накладные';
+      case 'invoice-view': return 'Накладные / Просмотр';
+      case 'invoice-create': return 'Накладные / Создание';
+      case 'warehouse-stock': return 'Склад / Запасы';
+      case 'warehouse-issues': return 'Склад / Выдача';
+      case 'stock-view': return 'Склад / Просмотр позиции';
+      case 'stock-create': return 'Склад / Добавление позиции';
+      case 'issue-view': return 'Склад / Просмотр выдачи';
+      case 'issue-create': return 'Склад / Создание выдачи';
+      default: return '';
+    }
+  }
+
+  function showView(id){
+    views.forEach(v=>v.classList.remove('active'));
+    const el = document.getElementById(id);
+    if(el){ el.classList.add('active'); }
+    // обновим боковое меню
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    const activeNav = document.querySelector(`.nav-item[data-nav="${id}"]`);
+    if(activeNav) activeNav.classList.add('active');
+    // хлебные крошки
+    const t = titleFor(id);
+    crumbsEl.textContent = '/ ' + t;
+    bcCurrent.textContent = ' / ' + t;
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // Сайдбар
+  navItems.forEach(i=> i.addEventListener('click', ()=> showView(i.dataset.nav)));
+
+  // Кнопки действий с data-nav
+  document.body.addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-nav]');
+    if(btn && !btn.classList.contains('nav-item')){
+      e.preventDefault();
+      showView(btn.dataset.nav);
+    }
+  });
+
+  // ====== Удаление (демо): модалка + удаление строки ======
+  let rowToDelete = null;
+  const modal = document.getElementById('modalDelete');
+  const confirmBtn = document.getElementById('confirmDelete');
+  const cancelBtn = document.getElementById('cancelDelete');
+  document.body.addEventListener('click', (e)=>{
+    const delBtn = e.target.closest('[data-action="delete"]');
+    if(delBtn){
+      rowToDelete = delBtn.closest('tr');
+      modal.style.display = 'flex';
+    }
+  });
+  confirmBtn.addEventListener('click', ()=>{
+    if(rowToDelete && rowToDelete.parentElement){ rowToDelete.parentElement.removeChild(rowToDelete); }
+    rowToDelete = null; modal.style.display='none';
+  });
+  cancelBtn.addEventListener('click', ()=>{ rowToDelete=null; modal.style.display='none'; });
+</script>
+</body>
+</html>
