@@ -7,6 +7,16 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'mock'
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.vue$/,
+      loader: 'ignore-loader'
+    })
+    return config
+  },
+  experimental: {
+    externalDir: true
   }
 }
 

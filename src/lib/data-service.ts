@@ -18,8 +18,8 @@ import dictionariesData from '@/data/dictionaries.json';
 
 class DataService {
   private users: User[] = usersData.users;
-  private carts: Cart[] = cartsData.carts;
-  private orders: Order[] = ordersData.orders;
+  private carts: Cart[] = cartsData.carts as Cart[];
+  private orders: Order[] = ordersData.orders as Order[];
   private warehouse = warehouseData;
   private reports = reportsData;
   private dictionaries = dictionariesData;
@@ -68,7 +68,7 @@ class DataService {
   // Dashboard
   async getDashboardStats(): Promise<DashboardStats> {
     await this.delay(400);
-    return this.reports.dashboard_stats;
+    return this.reports.dashboard_stats as DashboardStats;
   }
 
   // Картотека пациентов
@@ -102,8 +102,8 @@ class DataService {
 
     return {
       count: filteredCarts.length,
-      next: null,
-      previous: null,
+      next: undefined,
+      previous: undefined,
       results: filteredCarts
     };
   }
@@ -184,8 +184,8 @@ class DataService {
 
     return {
       count: filteredOrders.length,
-      next: null,
-      previous: null,
+      next: undefined,
+      previous: undefined,
       results: filteredOrders
     };
   }
@@ -245,8 +245,8 @@ class DataService {
     const medicalOrders = this.orders.filter(order => order.status === 1);
     return {
       count: medicalOrders.length,
-      next: null,
-      previous: null,
+      next: undefined,
+      previous: undefined,
       results: medicalOrders
     };
   }
@@ -263,8 +263,8 @@ class DataService {
     const productionOrders = this.orders.filter(order => order.status >= 2 && order.status <= 4);
     return {
       count: productionOrders.length,
-      next: null,
-      previous: null,
+      next: undefined,
+      previous: undefined,
       results: productionOrders
     };
   }
@@ -279,8 +279,8 @@ class DataService {
     await this.delay(300);
     return {
       count: this.warehouse.warehouse_entries.length,
-      next: null,
-      previous: null,
+      next: undefined,
+      previous: undefined,
       results: this.warehouse.warehouse_entries
     };
   }

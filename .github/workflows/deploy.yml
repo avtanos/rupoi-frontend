@@ -26,8 +26,11 @@ jobs:
     - name: Build
       run: npm run build
       env:
-        NEXT_PUBLIC_API_BASE_URL: ${{ secrets.API_BASE_URL || 'http://localhost:8000/api' }}
+        NEXT_PUBLIC_API_BASE_URL: mock
         
+    - name: Export
+      run: npm run export
+      
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       if: github.ref == 'refs/heads/main'

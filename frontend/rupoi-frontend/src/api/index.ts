@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 
 // Создаем экземпляр axios
 const apiClient: AxiosInstance = axios.create({
@@ -12,7 +12,7 @@ const apiClient: AxiosInstance = axios.create({
 
 // Интерцептор для добавления токена к запросам
 apiClient.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('access_token')
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`
