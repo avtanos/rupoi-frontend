@@ -1,0 +1,120 @@
+{
+  "warehouse_entries": [
+    {
+      "id": 1,
+      "order": {
+        "id": 1,
+        "number": "ORD-2025-0156",
+        "cart": {
+          "first_name": "Иван",
+          "last_name": "Иванов",
+          "card_number": "2025-0001"
+        }
+      },
+      "invoice": {
+        "id": 1,
+        "number": "INV-2025-001",
+        "date": "2025-09-10",
+        "total_amount": 67500
+      },
+      "quantity": 1,
+      "status": "stored",
+      "received_at": "2025-09-10T10:00:00Z",
+      "stored_at": "2025-09-10T10:30:00Z",
+      "issued_at": null
+    },
+    {
+      "id": 2,
+      "order": {
+        "id": 2,
+        "number": "ORD-2025-0157",
+        "cart": {
+          "first_name": "Мария",
+          "last_name": "Петрова",
+          "card_number": "2025-0002"
+        }
+      },
+      "invoice": {
+        "id": 2,
+        "number": "INV-2025-002",
+        "date": "2025-09-12",
+        "total_amount": 16000
+      },
+      "quantity": 1,
+      "status": "issued",
+      "received_at": "2025-09-12T14:00:00Z",
+      "stored_at": "2025-09-12T14:15:00Z",
+      "issued_at": "2025-09-14T11:00:00Z"
+    }
+  ],
+  "issues": [
+    {
+      "id": 1,
+      "order": {
+        "id": 2,
+        "number": "ORD-2025-0157",
+        "cart": {
+          "first_name": "Мария",
+          "last_name": "Петрова",
+          "card_number": "2025-0002"
+        }
+      },
+      "quantity": 1,
+      "issued_at": "2025-09-14T11:00:00Z",
+      "issued_by": {
+        "id": 5,
+        "first_name": "Складской",
+        "last_name": "Работник",
+        "position": "Кладовщик",
+        "department": "Склад"
+      },
+      "order_status": 6
+    }
+  ],
+  "inventory": [
+    {
+      "id": 1,
+      "article": "PROT-001",
+      "name": "Протез бедра титановый",
+      "category": "Протезы",
+      "quantity": 15,
+      "unit": "шт",
+      "status": "in_stock",
+      "min_quantity": 5,
+      "price": 67500
+    },
+    {
+      "id": 2,
+      "article": "SHOE-001",
+      "name": "Ортопедическая обувь",
+      "category": "Обувь",
+      "quantity": 8,
+      "unit": "пара",
+      "status": "in_stock",
+      "min_quantity": 3,
+      "price": 16000
+    },
+    {
+      "id": 3,
+      "article": "ORTH-001",
+      "name": "Ортез колена",
+      "category": "Ортопедические изделия",
+      "quantity": 12,
+      "unit": "шт",
+      "status": "in_stock",
+      "min_quantity": 4,
+      "price": 18000
+    },
+    {
+      "id": 4,
+      "article": "MAT-001",
+      "name": "Титан",
+      "category": "Материалы",
+      "quantity": 2,
+      "unit": "кг",
+      "status": "low_stock",
+      "min_quantity": 5,
+      "price": 15000
+    }
+  ]
+}

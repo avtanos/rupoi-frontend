@@ -1,0 +1,88 @@
+{
+  "oblasts": [
+    { "id": 1, "name": "Чуйская область", "code": "CHU" },
+    { "id": 2, "name": "Ошская область", "code": "OSH" },
+    { "id": 3, "name": "Джалал-Абадская область", "code": "JAL" },
+    { "id": 4, "name": "Нарынская область", "code": "NAR" },
+    { "id": 5, "name": "Иссык-Кульская область", "code": "ISS" },
+    { "id": 6, "name": "Таласская область", "code": "TAL" },
+    { "id": 7, "name": "Баткенская область", "code": "BAT" }
+  ],
+  "raions": [
+    { "id": 1, "name": "Аламединский район", "code": "ALA", "oblast": 1 },
+    { "id": 2, "name": "Ошский район", "code": "OSH", "oblast": 2 },
+    { "id": 3, "name": "Джалал-Абадский район", "code": "JAL", "oblast": 3 },
+    { "id": 4, "name": "Нарынский район", "code": "NAR", "oblast": 4 },
+    { "id": 5, "name": "Иссык-Кульский район", "code": "ISS", "oblast": 5 },
+    { "id": 6, "name": "Таласский район", "code": "TAL", "oblast": 6 },
+    { "id": 7, "name": "Баткенский район", "code": "BAT", "oblast": 7 }
+  ],
+  "localities": [
+    { "id": 1, "name": "с. Аламедин", "code": "ALA001", "raion": 1 },
+    { "id": 2, "name": "г. Ош", "code": "OSH001", "raion": 2 },
+    { "id": 3, "name": "г. Джалал-Абад", "code": "JAL001", "raion": 3 },
+    { "id": 4, "name": "г. Нарын", "code": "NAR001", "raion": 4 },
+    { "id": 5, "name": "г. Каракол", "code": "ISS001", "raion": 5 },
+    { "id": 6, "name": "г. Талас", "code": "TAL001", "raion": 6 },
+    { "id": 7, "name": "г. Баткен", "code": "BAT001", "raion": 7 }
+  ],
+  "msecs": [
+    { "id": 1, "name": "МСЭ №1 г. Бишкек", "code": "MSE001", "locality": 1 },
+    { "id": 2, "name": "МСЭ №2 г. Ош", "code": "MSE002", "locality": 2 },
+    { "id": 3, "name": "МСЭ №3 г. Джалал-Абад", "code": "MSE003", "locality": 3 },
+    { "id": 4, "name": "МСЭ №4 г. Нарын", "code": "MSE004", "locality": 4 },
+    { "id": 5, "name": "МСЭ №5 г. Каракол", "code": "MSE005", "locality": 5 },
+    { "id": 6, "name": "МСЭ №6 г. Талас", "code": "MSE006", "locality": 6 },
+    { "id": 7, "name": "МСЭ №7 г. Баткен", "code": "MSE007", "locality": 7 }
+  ],
+  "disabilities": [
+    { "id": 1, "name": "Инвалидность по общему заболеванию", "code": "GENERAL" },
+    { "id": 2, "name": "Инвалидность по травме", "code": "TRAUMA" },
+    { "id": 3, "name": "Инвалидность с детства", "code": "CHILDHOOD" },
+    { "id": 4, "name": "Инвалидность по профессиональному заболеванию", "code": "PROFESSIONAL" }
+  ],
+  "device_types": [
+    { "id": 1, "name": "Протез бедра", "code": "HIP_PROSTHESIS" },
+    { "id": 2, "name": "Протез голени", "code": "LEG_PROSTHESIS" },
+    { "id": 3, "name": "Протез стопы", "code": "FOOT_PROSTHESIS" },
+    { "id": 4, "name": "Ортопедическая обувь", "code": "ORTHOPEDIC_SHOES" },
+    { "id": 5, "name": "Ортез колена", "code": "KNEE_ORTHOSIS" },
+    { "id": 6, "name": "Ортез голеностопа", "code": "ANKLE_ORTHOSIS" }
+  ],
+  "amputation_types": [
+    { "id": 1, "name": "Ампутация бедра", "code": "HIP_AMPUTATION" },
+    { "id": 2, "name": "Ампутация голени", "code": "LEG_AMPUTATION" },
+    { "id": 3, "name": "Ампутация стопы", "code": "FOOT_AMPUTATION" },
+    { "id": 4, "name": "Без ампутации", "code": "NO_AMPUTATION" }
+  ],
+  "diagnosis_types": [
+    { "id": 1, "name": "Сахарный диабет", "code": "DIABETES" },
+    { "id": 2, "name": "Травма", "code": "TRAUMA" },
+    { "id": 3, "name": "Врожденная патология", "code": "CONGENITAL" },
+    { "id": 4, "name": "Онкологическое заболевание", "code": "ONCOLOGY" },
+    { "id": 5, "name": "Сосудистые заболевания", "code": "VASCULAR" }
+  ],
+  "materials": [
+    { "id": 1, "name": "Титан", "code": "TITANIUM", "unit": "кг", "price": 15000 },
+    { "id": 2, "name": "Полиэтилен", "code": "POLYETHYLENE", "unit": "шт", "price": 5000 },
+    { "id": 3, "name": "Кожа", "code": "LEATHER", "unit": "м²", "price": 8000 },
+    { "id": 4, "name": "Пластик", "code": "PLASTIC", "unit": "кг", "price": 3000 },
+    { "id": 5, "name": "Углеродное волокно", "code": "CARBON_FIBER", "unit": "м", "price": 12000 },
+    { "id": 6, "name": "Алюминий", "code": "ALUMINUM", "unit": "кг", "price": 8000 }
+  ],
+  "works": [
+    { "id": 1, "name": "Изготовление протеза", "code": "PROSTHESIS_MAKING", "unit": "шт", "price": 25000 },
+    { "id": 2, "name": "Пошив обуви", "code": "SHOE_MAKING", "unit": "пара", "price": 12000 },
+    { "id": 3, "name": "Изготовление ортеза", "code": "ORTHOSIS_MAKING", "unit": "шт", "price": 15000 },
+    { "id": 4, "name": "Ремонт изделия", "code": "REPAIR", "unit": "шт", "price": 8000 },
+    { "id": 5, "name": "Измерения", "code": "MEASUREMENTS", "unit": "раз", "price": 2000 },
+    { "id": 6, "name": "Примерка", "code": "FITTING", "unit": "раз", "price": 1500 }
+  ],
+  "employees": [
+    { "id": 1, "first_name": "Мастер", "last_name": "Ибрагимов", "position": "Протезист", "department": "Производство", "is_active": true },
+    { "id": 2, "first_name": "Обувщик", "last_name": "Ахмедов", "position": "Мастер по обуви", "department": "Производство", "is_active": true },
+    { "id": 3, "first_name": "Ортопед", "last_name": "Султанов", "position": "Мастер-ортопед", "department": "Производство", "is_active": true },
+    { "id": 4, "first_name": "Кладовщик", "last_name": "Усманов", "position": "Складской работник", "department": "Склад", "is_active": true },
+    { "id": 5, "first_name": "Складской", "last_name": "Работник", "position": "Кладовщик", "department": "Склад", "is_active": true }
+  ]
+}

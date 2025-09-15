@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>РУПИО - Система управления протезированием</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --border: #bdc3c7;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        .app {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 60px 1fr;
+            grid-template-areas: "sidebar header" "sidebar main";
+            height: 100vh;
+        }
+        
+        .header {
+            grid-area: header;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar {
+            grid-area: sidebar;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+        
+        .main {
+            grid-area: main;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            padding: 0 20px;
+            color: var(--primary);
+        }
+        
+        .nav-group {
+            margin-bottom: 20px;
+        }
+        
+        .nav-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            padding: 0 20px 10px;
+            font-weight: 600;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #f8f9fa;
+            border-left-color: var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .col {
+            flex: 1;
+        }
+        
+        .col-2 {
+            flex: 0 0 50%;
+        }
+        
+        .col-3 {
+            flex: 0 0 33.333%;
+        }
+        
+        .col-4 {
+            flex: 0 0 25%;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-new {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status-in-progress {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .status-ready {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .status-issued {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .breadcrumb a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .app {
+                grid-template-columns: 1fr;
+                grid-template-areas: "header" "main";
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div>
+                <h1>РУПИО</h1>
+                <span id="breadcrumb">/ Картотека пациентов</span>
+            </div>
+            <div>
+                <span>Администратор</span>
+            </div>
+        </header>
+        
+        <nav class="sidebar">
+            <div class="logo">РУПИО</div>
+            
+            <div class="nav-group">
+                <div class="nav-title">Основные модули</div>
+                <a href="#" class="nav-item active" data-view="cart-list">Картотека пациентов</a>
+                <a href="#" class="nav-item" data-view="order-list">Управление заказами</a>
+                <a href="#" class="nav-item" data-view="medical-dept">Медицинский отдел</a>
+                <a href="#" class="nav-item" data-view="warehouse">Склад</a>
+                <a href="#" class="nav-item" data-view="reports">Отчетность</a>
+            </div>
+            
+            <div class="nav-group">
+                <div class="nav-title">Справочники</div>
+                <a href="#" class="nav-item" data-view="dictionaries">Справочники</a>
+                <a href="#" class="nav-item" data-view="users">Пользователи</a>
+                <a href="#" class="nav-item" data-view="employees">Сотрудники</a>
+            </div>
+        </nav>
+        
+        <main class="main">
+            <!-- Картотека пациентов -->
+            <div id="cart-list" class="view active">
+                <div class="page-title">Картотека пациентов</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">1,247</div>
+                        <div class="stat-label">Всего пациентов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">892</div>
+                        <div class="stat-label">Активных</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Снятых с учета</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">199</div>
+                        <div class="stat-label">Несостоящих на учете</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Реестр пациентов</h3>
+                        <button class="btn btn-primary" onclick="showView('cart-create')">+ Новый пациент</button>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" class="form-control" placeholder="Поиск по ФИО, ПИН, номеру карточки...">
+                        </div>
+                        <div class="col-2">
+                            <select class="form-control">
+                                <option>Все группы инвалидности</option>
+                                <option>I группа</option>
+                                <option>II группа</option>
+                                <option>III группа</option>
+                                <option>Ребенок-инвалид</option>
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary">Поиск</button>
+                        </div>
+                    </div>
+                    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>№ карточки</th>
+                                <th>ФИО</th>
+                                <th>Дата рождения</th>
+                                <th>ПИН</th>
+                                <th>Группа</th>
+                                <th>Телефон</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2025-0001</td>
+                                <td>Иванов Иван Иванович</td>
+                                <td>12.03.1980</td>
+                                <td>1230****4567</td>
+                                <td>II группа</td>
+                                <td>+996 555 123 456</td>
+                                <td><span class="status-badge status-ready">Активен</span></td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="showView('cart-info')">Просмотр</button>
+                                    <button class="btn btn-warning" onclick="showView('cart-edit')">Редактировать</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-0002</td>
+                                <td>Петрова Анна Сергеевна</td>
+                                <td>25.07.1975</td>
+                                <td>2340****5678</td>
+                                <td>III группа</td>
+                                <td>+996 555 234 567</td>
+                                <td><span class="status-badge status-ready">Активен</span></td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="showView('cart-info')">Просмотр</button>
+                                    <button class="btn btn-warning" onclick="showView('cart-edit')">Редактировать</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Создание/Редактирование карточки -->
+            <div id="cart-create" class="view">
+                <div class="breadcrumb">
+                    <a href="#" onclick="showView('cart-list')">Картотека пациентов</a> / Создание карточки
+                </div>
+                <div class="page-title">Создание карточки пациента</div>
+                
+                <div class="card">
+                    <h3>Персональные данные</h3>
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Фамилия *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Имя *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Отчество</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Дата рождения *</label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Пол *</label>
+                                <select class="form-control" required>
+                                    <option value="">Выберите</option>
+                                    <option value="1">Мужской</option>
+                                    <option value="2">Женский</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>ПИН *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Тип документа *</label>
+                                <select class="form-control" required>
+                                    <option value="">Выберите</option>
+                                    <option value="1">Паспорт</option>
+                                    <option value="2">Свидетельство о рождении</option>
+                                    <option value="3">Иной документ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Номер документа *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Адресные данные</h3>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Область регистрации</label>
+                                <select class="form-control">
+                                    <option value="">Выберите область</option>
+                                    <option value="1">Бишкек</option>
+                                    <option value="2">Чуйская область</option>
+                                    <option value="3">Иссык-Кульская область</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Район регистрации</label>
+                                <select class="form-control">
+                                    <option value="">Выберите район</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Населенный пункт</label>
+                                <select class="form-control">
+                                    <option value="">Выберите населенный пункт</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Адрес регистрации</label>
+                        <input type="text" class="form-control" placeholder="Улица, дом, квартира">
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Медицинская информация</h3>
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Группа инвалидности</label>
+                                <select class="form-control">
+                                    <option value="">Не установлена</option>
+                                    <option value="1">I группа</option>
+                                    <option value="2">II группа</option>
+                                    <option value="3">III группа</option>
+                                    <option value="4">Ребенок-инвалид</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>МСЭК</label>
+                                <select class="form-control">
+                                    <option value="">Выберите МСЭК</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Номер справки МСЭК</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Дата выдачи справки</label>
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button class="btn" onclick="showView('cart-list')" style="margin-right: 10px;">Отмена</button>
+                    <button class="btn btn-primary">Сохранить</button>
+                </div>
+            </div>
+            
+            <!-- Просмотр карточки -->
+            <div id="cart-info" class="view">
+                <div class="breadcrumb">
+                    <a href="#" onclick="showView('cart-list')">Картотека пациентов</a> / Просмотр карточки
+                </div>
+                <div class="page-title">Карточка пациента</div>
+                
+                <div class="card">
+                    <h3>Основная информация</h3>
+                    <div class="row">
+                        <div class="col-2">
+                            <strong>Номер карточки:</strong> 2025-0001
+                        </div>
+                        <div class="col-2">
+                            <strong>ФИО:</strong> Иванов Иван Иванович
+                        </div>
+                        <div class="col-2">
+                            <strong>Дата рождения:</strong> 12.03.1980
+                        </div>
+                        <div class="col-2">
+                            <strong>ПИН:</strong> 1230****4567
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button class="btn btn-warning" onclick="showView('cart-edit')" style="margin-right: 10px;">Редактировать</button>
+                    <button class="btn" onclick="showView('cart-list')">Назад к списку</button>
+                </div>
+            </div>
+            
+            <!-- Управление заказами -->
+            <div id="order-list" class="view">
+                <div class="page-title">Управление заказами</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">412</div>
+                        <div class="stat-label">Всего заказов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">В работе</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">34</div>
+                        <div class="stat-label">Готово к выдаче</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">11</div>
+                        <div class="stat-label">Просрочено</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Реестр заказов</h3>
+                        <button class="btn btn-primary" onclick="showView('order-create')">+ Новый заказ</button>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-2">
+                            <select class="form-control">
+                                <option>Все типы</option>
+                                <option>Протезы</option>
+                                <option>Обувь</option>
+                                <option>Ортопедические изделия</option>
+                                <option>Ремонт</option>
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <select class="form-control">
+                                <option>Все статусы</option>
+                                <option>Новый</option>
+                                <option>В производстве</option>
+                                <option>На примерке</option>
+                                <option>На складе</option>
+                                <option>Выдан</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" placeholder="Поиск по номеру заказа, ФИО...">
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary">Поиск</button>
+                        </div>
+                    </div>
+                    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>№ заказа</th>
+                                <th>Пациент</th>
+                                <th>Тип</th>
+                                <th>Изделие</th>
+                                <th>Статус</th>
+                                <th>Дата создания</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ORD-2025-0156</td>
+                                <td>Иванов И.И.</td>
+                                <td>Протез</td>
+                                <td>Протез бедра</td>
+                                <td><span class="status-badge status-in-progress">В работе</span></td>
+                                <td>01.08.2025</td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="showView('order-info')">Просмотр</button>
+                                    <button class="btn btn-warning" onclick="showView('order-edit')">Редактировать</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Медицинский отдел -->
+            <div id="medical-dept" class="view">
+                <div class="page-title">Медицинский отдел</div>
+                
+                <div class="card">
+                    <h3>Направленные пациенты</h3>
+                    <p>Список пациентов, направленных в медицинский отдел для утверждения заказов.</p>
+                </div>
+            </div>
+            
+            <!-- Склад -->
+            <div id="warehouse" class="view">
+                <div class="page-title">Склад</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">1,247</div>
+                        <div class="stat-label">Всего позиций</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">892</div>
+                        <div class="stat-label">В наличии</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">34</div>
+                        <div class="stat-label">Критический запас</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Списано</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Складские запасы</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Артикул</th>
+                                <th>Наименование</th>
+                                <th>Категория</th>
+                                <th>Количество</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>PROT-001</td>
+                                <td>Протез бедра титановый</td>
+                                <td>Протезы</td>
+                                <td>15 шт.</td>
+                                <td><span class="status-badge status-ready">В наличии</span></td>
+                                <td>
+                                    <button class="btn btn-primary">Просмотр</button>
+                                    <button class="btn btn-warning">Редактировать</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Отчетность -->
+            <div id="reports" class="view">
+                <div class="page-title">Отчетность</div>
+                
+                <div class="card">
+                    <h3>Доступные отчеты</h3>
+                    <div class="row">
+                        <div class="col-2">
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Отчет по ЛОВЗ</button>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Отчет по изготовленным изделиям</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Справочники -->
+            <div id="dictionaries" class="view">
+                <div class="page-title">Справочники</div>
+                
+                <div class="row">
+                    <div class="col-2">
+                        <div class="card">
+                            <h3>Административные</h3>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Области</button>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Районы</button>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Населенные пункты</button>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="card">
+                            <h3>Медицинские</h3>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Типы ампутации</button>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Диагнозы</button>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Типы устройств</button>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="card">
+                            <h3>Технические</h3>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Материалы</button>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Работы</button>
+                            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Сотрудники</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        function showView(viewId) {
+            // Скрыть все представления
+            const views = document.querySelectorAll('.view');
+            views.forEach(view => view.classList.remove('active'));
+            
+            // Показать выбранное представление
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+            
+            // Обновить активный пункт меню
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Обновить хлебные крошки
+            const breadcrumb = document.getElementById('breadcrumb');
+            const titles = {
+                'cart-list': '/ Картотека пациентов',
+                'cart-create': '/ Картотека пациентов / Создание',
+                'cart-info': '/ Картотека пациентов / Просмотр',
+                'order-list': '/ Управление заказами',
+                'medical-dept': '/ Медицинский отдел',
+                'warehouse': '/ Склад',
+                'reports': '/ Отчетность',
+                'dictionaries': '/ Справочники'
+            };
+            
+            if (titles[viewId]) {
+                breadcrumb.textContent = titles[viewId];
+            }
+        }
+        
+        // Обработчики для навигации
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item[data-view]');
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const viewId = this.getAttribute('data-view');
+                    showView(viewId);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

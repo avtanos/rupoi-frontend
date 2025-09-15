@@ -1,0 +1,112 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "first_name": "Администратор",
+      "last_name": "Системы",
+      "email": "admin@rupoi.kg",
+      "role": {
+        "id": 1,
+        "name": "Администратор системы",
+        "code": "ADMIN",
+        "permissions": ["all"],
+        "is_active": true
+      },
+      "is_active": true,
+      "is_blocked": false,
+      "last_activity": "2025-09-15T19:30:00Z",
+      "session_timeout": 5
+    },
+    {
+      "id": 2,
+      "username": "registrar1",
+      "first_name": "Айгуль",
+      "last_name": "Токтобаева",
+      "email": "registrar1@rupoi.kg",
+      "role": {
+        "id": 2,
+        "name": "Регистратор",
+        "code": "REGISTRAR",
+        "permissions": ["carts.read", "carts.create", "carts.update"],
+        "is_active": true
+      },
+      "is_active": true,
+      "is_blocked": false,
+      "last_activity": "2025-09-15T19:25:00Z",
+      "session_timeout": 5
+    },
+    {
+      "id": 3,
+      "username": "medical1",
+      "first_name": "Доктор",
+      "last_name": "Ахмедов",
+      "email": "medical1@rupoi.kg",
+      "role": {
+        "id": 3,
+        "name": "Медицинский работник",
+        "code": "MEDICAL",
+        "permissions": ["orders.medical.read", "orders.medical.approve"],
+        "is_active": true
+      },
+      "is_active": true,
+      "is_blocked": false,
+      "last_activity": "2025-09-15T19:20:00Z",
+      "session_timeout": 5
+    },
+    {
+      "id": 4,
+      "username": "production1",
+      "first_name": "Мастер",
+      "last_name": "Ибрагимов",
+      "email": "production1@rupoi.kg",
+      "role": {
+        "id": 4,
+        "name": "Производственный работник",
+        "code": "PRODUCTION",
+        "permissions": ["orders.production.read", "orders.production.update"],
+        "is_active": true
+      },
+      "is_active": true,
+      "is_blocked": false,
+      "last_activity": "2025-09-15T19:15:00Z",
+      "session_timeout": 5
+    },
+    {
+      "id": 5,
+      "username": "warehouse1",
+      "first_name": "Складской",
+      "last_name": "Работник",
+      "email": "warehouse1@rupoi.kg",
+      "role": {
+        "id": 5,
+        "name": "Складской работник",
+        "code": "WAREHOUSE",
+        "permissions": ["warehouse.read", "warehouse.issue"],
+        "is_active": true
+      },
+      "is_active": true,
+      "is_blocked": false,
+      "last_activity": "2025-09-15T19:10:00Z",
+      "session_timeout": 5
+    },
+    {
+      "id": 6,
+      "username": "reports1",
+      "first_name": "Отчетный",
+      "last_name": "Специалист",
+      "email": "reports1@rupoi.kg",
+      "role": {
+        "id": 6,
+        "name": "Отчетный работник",
+        "code": "REPORTS",
+        "permissions": ["reports.read", "reports.export"],
+        "is_active": true
+      },
+      "is_active": true,
+      "is_blocked": false,
+      "last_activity": "2025-09-15T19:05:00Z",
+      "session_timeout": 5
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "carts": [
+    {
+      "id": 1,
+      "card_number": "2025-0001",
+      "first_name": "Иван",
+      "last_name": "Иванов",
+      "middle_name": "Иванович",
+      "birth_date": "1980-03-12",
+      "inn": "1230123456789",
+      "phone": "+996 555 123 456",
+      "address": "г. Бишкек, ул. Чуйская, 123",
+      "disability_group": 2,
+      "registration_date": "2025-01-15",
+      "status": "active",
+      "oblast": {
+        "id": 1,
+        "name": "Чуйская область",
+        "code": "CHU"
+      },
+      "raion": {
+        "id": 1,
+        "name": "Аламединский район",
+        "code": "ALA",
+        "oblast": 1
+      },
+      "locality": {
+        "id": 1,
+        "name": "с. Аламедин",
+        "code": "ALA001",
+        "raion": 1
+      },
+      "msec": {
+        "id": 1,
+        "name": "МСЭ №1 г. Бишкек",
+        "code": "MSE001",
+        "locality": 1
+      },
+      "disability": {
+        "id": 1,
+        "name": "Инвалидность по общему заболеванию",
+        "code": "GENERAL"
+      }
+    },
+    {
+      "id": 2,
+      "card_number": "2025-0002",
+      "first_name": "Мария",
+      "last_name": "Петрова",
+      "middle_name": "Сергеевна",
+      "birth_date": "1975-07-25",
+      "inn": "1230123456790",
+      "phone": "+996 555 234 567",
+      "address": "г. Ош, ул. Ленина, 45",
+      "disability_group": 1,
+      "registration_date": "2025-02-10",
+      "status": "active",
+      "oblast": {
+        "id": 2,
+        "name": "Ошская область",
+        "code": "OSH"
+      },
+      "raion": {
+        "id": 2,
+        "name": "Ошский район",
+        "code": "OSH",
+        "oblast": 2
+      },
+      "locality": {
+        "id": 2,
+        "name": "г. Ош",
+        "code": "OSH001",
+        "raion": 2
+      },
+      "msec": {
+        "id": 2,
+        "name": "МСЭ №2 г. Ош",
+        "code": "MSE002",
+        "locality": 2
+      },
+      "disability": {
+        "id": 2,
+        "name": "Инвалидность по травме",
+        "code": "TRAUMA"
+      }
+    },
+    {
+      "id": 3,
+      "card_number": "2025-0003",
+      "first_name": "Ахмед",
+      "last_name": "Алиев",
+      "middle_name": "Муратович",
+      "birth_date": "1990-11-08",
+      "inn": "1230123456791",
+      "phone": "+996 555 345 678",
+      "address": "г. Джалал-Абад, ул. Советская, 78",
+      "disability_group": 3,
+      "registration_date": "2025-03-05",
+      "status": "archived",
+      "oblast": {
+        "id": 3,
+        "name": "Джалал-Абадская область",
+        "code": "JAL"
+      },
+      "raion": {
+        "id": 3,
+        "name": "Джалал-Абадский район",
+        "code": "JAL",
+        "oblast": 3
+      },
+      "locality": {
+        "id": 3,
+        "name": "г. Джалал-Абад",
+        "code": "JAL001",
+        "raion": 3
+      },
+      "msec": {
+        "id": 3,
+        "name": "МСЭ №3 г. Джалал-Абад",
+        "code": "MSE003",
+        "locality": 3
+      },
+      "disability": {
+        "id": 3,
+        "name": "Инвалидность с детства",
+        "code": "CHILDHOOD"
+      }
+    },
+    {
+      "id": 4,
+      "card_number": "2025-0004",
+      "first_name": "Айнура",
+      "last_name": "Кызы",
+      "middle_name": "Асанбековна",
+      "birth_date": "1985-05-20",
+      "inn": "1230123456792",
+      "phone": "+996 555 456 789",
+      "address": "г. Нарын, ул. Центральная, 12",
+      "disability_group": 2,
+      "registration_date": "2025-04-12",
+      "status": "not_registered",
+      "oblast": {
+        "id": 4,
+        "name": "Нарынская область",
+        "code": "NAR"
+      },
+      "raion": {
+        "id": 4,
+        "name": "Нарынский район",
+        "code": "NAR",
+        "oblast": 4
+      },
+      "locality": {
+        "id": 4,
+        "name": "г. Нарын",
+        "code": "NAR001",
+        "raion": 4
+      },
+      "msec": {
+        "id": 4,
+        "name": "МСЭ №4 г. Нарын",
+        "code": "MSE004",
+        "locality": 4
+      },
+      "disability": {
+        "id": 4,
+        "name": "Инвалидность по профессиональному заболеванию",
+        "code": "PROFESSIONAL"
+      }
+    }
+  ]
+}

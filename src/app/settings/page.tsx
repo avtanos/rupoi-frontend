@@ -1,0 +1,266 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import Layout from '@/components/Layout';
+import { apiClient } from '@/lib/api';
+import { Users, Settings as SettingsIcon, Database, Shield } from 'lucide-react';
+
+export default function SettingsPage() {
+  const [activeTab, setActiveTab] = useState('users');
+
+  const tabs = [
+    { id: 'users', name: 'Пользователи', icon: Users },
+    { id: 'roles', name: 'Роли', icon: Shield },
+    { id: 'dictionaries', name: 'Справочники', icon: Database },
+    { id: 'system', name: 'Система', icon: SettingsIcon },
+  ];
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Настройки</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Управление пользователями, ролями и системными настройками
+          </p>
+        </div>
+
+        {/* Табы */}
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`${
+                    activeTab === tab.id
+                      ? 'border-primary-500 text-primary-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center`}
+                >
+                  <Icon className="h-4 w-4 mr-2" />
+                  {tab.name}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Содержимое табов */}
+        <div className="card p-6">
+          {activeTab === 'users' && <UsersTab />}
+          {activeTab === 'roles' && <RolesTab />}
+          {activeTab === 'dictionaries' && <DictionariesTab />}
+          {activeTab === 'system' && <SystemTab />}
+        </div>
+      </div>
+    </Layout>
+  );
+}
+
+function UsersTab() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-medium text-gray-900">Пользователи системы</h3>
+        <button className="btn btn-primary">+ Новый пользователь</button>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Логин
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                ФИО
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Роль
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Статус
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Действия
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                admin
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                Администратор Системы
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="badge badge-info">Администратор</span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="badge badge-success">Активен</span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div className="flex space-x-2">
+                  <button className="text-primary-600 hover:text-primary-900">Редактировать</button>
+                  <button className="text-red-600 hover:text-red-900">Заблокировать</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function RolesTab() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-medium text-gray-900">Роли пользователей</h3>
+        <button className="btn btn-primary">+ Новая роль</button>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { name: 'Администратор системы', code: 'ADMIN', permissions: ['all'] },
+          { name: 'Регистратор', code: 'REGISTRAR', permissions: ['carts.read', 'carts.create', 'carts.update'] },
+          { name: 'Медицинский работник', code: 'MEDICAL', permissions: ['orders.medical.read', 'orders.medical.approve'] },
+          { name: 'Производственный работник', code: 'PRODUCTION', permissions: ['orders.production.read', 'orders.production.update'] },
+          { name: 'Складской работник', code: 'WAREHOUSE', permissions: ['warehouse.read', 'warehouse.issue'] },
+          { name: 'Отчетный работник', code: 'REPORTS', permissions: ['reports.read', 'reports.export'] },
+        ].map((role, index) => (
+          <div key={index} className="card p-4">
+            <h4 className="font-medium text-gray-900">{role.name}</h4>
+            <p className="text-sm text-gray-500 mt-1">Код: {role.code}</p>
+            <div className="mt-3">
+              <p className="text-xs text-gray-500">Разрешения:</p>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {role.permissions.map((permission, pIndex) => (
+                  <span key={pIndex} className="badge badge-info text-xs">
+                    {permission}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DictionariesTab() {
+  return (
+    <div>
+      <h3 className="text-lg font-medium text-gray-900 mb-6">Справочники</h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="card p-4">
+          <h4 className="font-medium text-gray-900 mb-3">Административные</h4>
+          <div className="space-y-2">
+            <button className="btn btn-secondary btn-sm w-full">Области</button>
+            <button className="btn btn-secondary btn-sm w-full">Районы</button>
+            <button className="btn btn-secondary btn-sm w-full">Населенные пункты</button>
+            <button className="btn btn-secondary btn-sm w-full">МСЭ</button>
+          </div>
+        </div>
+        
+        <div className="card p-4">
+          <h4 className="font-medium text-gray-900 mb-3">Медицинские</h4>
+          <div className="space-y-2">
+            <button className="btn btn-secondary btn-sm w-full">Типы ампутации</button>
+            <button className="btn btn-secondary btn-sm w-full">Диагнозы</button>
+            <button className="btn btn-secondary btn-sm w-full">Типы устройств</button>
+            <button className="btn btn-secondary btn-sm w-full">Группы инвалидности</button>
+          </div>
+        </div>
+        
+        <div className="card p-4">
+          <h4 className="font-medium text-gray-900 mb-3">Технические</h4>
+          <div className="space-y-2">
+            <button className="btn btn-secondary btn-sm w-full">Материалы</button>
+            <button className="btn btn-secondary btn-sm w-full">Работы</button>
+            <button className="btn btn-secondary btn-sm w-full">Сотрудники</button>
+            <button className="btn btn-secondary btn-sm w-full">Модели обуви</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SystemTab() {
+  return (
+    <div>
+      <h3 className="text-lg font-medium text-gray-900 mb-6">Системные настройки</h3>
+      
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Название организации
+          </label>
+          <input 
+            type="text" 
+            className="input" 
+            defaultValue="РУПИО - Республиканское управление протезно-ортопедических изделий"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Время жизни сессии (минуты)
+          </label>
+          <input 
+            type="number" 
+            className="input" 
+            defaultValue="5"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Максимальное количество попыток входа
+          </label>
+          <input 
+            type="number" 
+            className="input" 
+            defaultValue="3"
+          />
+        </div>
+        
+        <div className="flex items-center">
+          <input 
+            type="checkbox" 
+            id="auto-logout" 
+            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+            defaultChecked
+          />
+          <label htmlFor="auto-logout" className="ml-2 block text-sm text-gray-900">
+            Автоматический выход при неактивности
+          </label>
+        </div>
+        
+        <div className="flex items-center">
+          <input 
+            type="checkbox" 
+            id="email-notifications" 
+            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+            defaultChecked
+          />
+          <label htmlFor="email-notifications" className="ml-2 block text-sm text-gray-900">
+            Email уведомления
+          </label>
+        </div>
+        
+        <div className="pt-4">
+          <button className="btn btn-primary">Сохранить настройки</button>
+        </div>
+      </div>
+    </div>
+  );
+}
