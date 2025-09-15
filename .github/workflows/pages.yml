@@ -37,9 +37,6 @@ jobs:
         env:
           NEXT_PUBLIC_API_BASE_URL: mock
 
-      - name: Export static files
-        run: npm run export
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
