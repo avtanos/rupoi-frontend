@@ -176,7 +176,7 @@ MIT License - см. файл [LICENSE](LICENSE)
 
 ## 🌐 Демо
 
-[Посмотреть демо](https://your-username.github.io/rupoi-frontend)
+[Посмотреть демо](https://avtanos.github.io/rupoi-frontend)
 
 ---
 

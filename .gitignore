@@ -6,7 +6,7 @@ yarn-error.log*
 
 # Next.js
 .next/
-out/
+# out/ - commented out for GitHub Pages
 build/
 
 # Environment variables
