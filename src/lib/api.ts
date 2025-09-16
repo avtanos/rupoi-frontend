@@ -98,9 +98,6 @@ class ApiClient {
   }
 
   // Warehouse
-  async getWarehouseEntries(): Promise<PaginatedResponse<any>> {
-    return dataService.getWarehouseEntries();
-  }
 
   async getInventory(): Promise<any[]> {
     return dataService.getInventory();

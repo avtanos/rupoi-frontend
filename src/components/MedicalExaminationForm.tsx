@@ -32,7 +32,8 @@ export default function MedicalExaminationForm({ order, onSave, onCancel }: Medi
   const [activeTab, setActiveTab] = useState('examination'); // 'examination', 'conclusion', 'recommendations'
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const checked = 'checked' in e.target ? e.target.checked : false;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -102,7 +103,7 @@ export default function MedicalExaminationForm({ order, onSave, onCancel }: Medi
                 Медицинский осмотр
               </h2>
               <p className="text-sm text-gray-500">
-                Заказ №{order.number} - {order.cart?.first_name || ''} {order.cart?.last_name || ''}
+                Заказ №{order.number} - {order.cart?.first_name || ''} {order.cart?.name || ''}
               </p>
             </div>
           </div>
@@ -122,7 +123,7 @@ export default function MedicalExaminationForm({ order, onSave, onCancel }: Medi
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-blue-800">Пациент:</span>
-                  <p className="text-blue-700">{order.cart?.first_name || ''} {order.cart?.last_name || ''} {order.cart?.middle_name || ''}</p>
+                  <p className="text-blue-700">{order.cart?.first_name || ''} {order.cart?.name || ''} {order.cart?.parent_name || ''}</p>
                 </div>
                 <div>
                   <span className="font-medium text-blue-800">ИНН:</span>

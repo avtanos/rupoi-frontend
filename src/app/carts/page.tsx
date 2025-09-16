@@ -147,9 +147,9 @@ export default function CartsPage() {
                 <div className="h-6 w-6 text-red-600">❌</div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Несостоящих</p>
+                <p className="text-sm font-medium text-gray-500">Неактивных</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {carts.filter(c => c.status === 'not_registered').length}
+                  {carts.filter(c => c.status === 'inactive').length}
                 </p>
               </div>
             </div>
@@ -238,7 +238,7 @@ export default function CartsPage() {
                         {cart.card_number}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {cart.last_name} {cart.first_name} {cart.middle_name}
+                        {cart.name} {cart.first_name} {cart.parent_name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {cart.birth_date ? new Date(cart.birth_date).toLocaleDateString('ru-RU') : 'Не указано'}
@@ -247,10 +247,10 @@ export default function CartsPage() {
                         {cart.inn}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {cart.disability_group} группа
+                        {cart.lovz_group} группа
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {cart.phone}
+                        {cart.phone_number}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={getStatusBadge(cart.status)}>

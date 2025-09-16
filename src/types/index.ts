@@ -63,6 +63,7 @@ export interface Cart {
   additional_phone_number?: string;
   
   // Служебные поля
+  status: 'active' | 'inactive' | 'archived';
   medical_department_direct_date?: string;
   deregistration_date?: string;
   deregistration_reason?: string;
@@ -145,6 +146,7 @@ export interface Order {
   // Медицинские данные
   priority_level?: 'normal' | 'high' | 'urgent';
   medical_examination?: any;
+  note?: string;
   
   // Данные для обуви
   shoe_model_id?: number;
@@ -156,7 +158,6 @@ export interface Order {
   // Связанные данные
   cart: Cart;
   device_type: DeviceType;
-  amputation_type: AmputationType;
   diagnosis_type: DiagnosisType;
   status: number;
   created_at: string;
@@ -246,13 +247,6 @@ export interface WarehouseEntry {
   issued_at?: string;
 }
 
-export interface Overhead {
-  id: number;
-  number: string;
-  date: string;
-  total_amount: number;
-  status: 'draft' | 'confirmed' | 'cancelled';
-}
 
 export interface Issue {
   id: number;
@@ -335,6 +329,7 @@ export interface OrderMeasurement {
   order_id: number;
   type: string;
   measurement: number;
+  unit: string;
   side: 'left' | 'right' | 'both';
 }
 
@@ -368,11 +363,16 @@ export interface Overhead {
   id: number;
   number: string;
   date: string;
+  create_date: string;
   shop_name: string;
   device_count: number;
   status: 'draft' | 'confirmed' | 'cancelled';
   type: string;
+  total_amount: number;
+  note?: string;
   orders: OverheadToOrder[];
+  created_at: string;
+  updated_at: string;
 }
 
 export interface OverheadToOrder {

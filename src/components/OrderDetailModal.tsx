@@ -59,7 +59,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
                 Детали заказа №{order.number}
               </h2>
               <p className="text-sm text-gray-500">
-                {order.cart?.first_name || ''} {order.cart?.last_name || ''} {order.cart?.middle_name || ''}
+                {order.cart?.first_name || ''} {order.cart?.name || ''} {order.cart?.parent_name || ''}
               </p>
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
                   <div className="flex justify-between">
                     <span className="font-medium text-green-800">ФИО:</span>
                     <span className="text-green-700">
-                      {order.cart?.last_name || ''} {order.cart?.first_name || ''} {order.cart?.middle_name || ''}
+                      {order.cart?.name || ''} {order.cart?.first_name || ''} {order.cart?.parent_name || ''}
                     </span>
                   </div>
                   <div className="flex justify-between">

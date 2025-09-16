@@ -19,8 +19,8 @@ import overheadsData from '@/data/overheads.json';
 
 class DataService {
   private users: User[] = usersData.users;
-  private carts: Cart[] = cartsData.carts as Cart[];
-  private orders: Order[] = ordersData.orders as Order[];
+  private carts: Cart[] = cartsData.carts as unknown as Cart[];
+  private orders: Order[] = ordersData.orders as unknown as Order[];
   private warehouse = warehouseData;
   private reports = reportsData;
   private dictionaries = dictionariesData;
@@ -70,7 +70,7 @@ class DataService {
   // Dashboard
   async getDashboardStats(): Promise<DashboardStats> {
     await this.delay(400);
-    return this.reports.dashboard_stats as DashboardStats;
+    return this.reports.dashboard_stats as unknown as DashboardStats;
   }
 
   // Картотека пациентов
@@ -84,7 +84,7 @@ class DataService {
       const search = params.search.toLowerCase();
       filteredCarts = filteredCarts.filter(cart => 
         cart.first_name.toLowerCase().includes(search) ||
-        cart.last_name.toLowerCase().includes(search) ||
+        cart.name.toLowerCase().includes(search) ||
         cart.card_number.includes(search) ||
         cart.inn.includes(search)
       );
@@ -93,7 +93,7 @@ class DataService {
     // Фильтрация по группе инвалидности
     if (params?.disability_group) {
       filteredCarts = filteredCarts.filter(cart => 
-        cart.disability_group.toString() === params.disability_group
+        cart.lovz_group.toString() === params.disability_group
       );
     }
 
@@ -124,22 +124,52 @@ class DataService {
     
     const newCart: Cart = {
       id: Math.max(...this.carts.map(c => c.id)) + 1,
+      auto_number: Math.max(...this.carts.map(c => c.auto_number)) + 1,
       card_number: `2025-${String(Math.max(...this.carts.map(c => parseInt(c.card_number.split('-')[1]))) + 1).padStart(4, '0')}`,
-      first_name: cartData.first_name || '',
-      last_name: cartData.last_name || '',
-      middle_name: cartData.middle_name,
-      birth_date: cartData.birth_date || '',
+      create_date: new Date().toISOString().split('T')[0],
       inn: cartData.inn || '',
-      phone: cartData.phone || '',
-      address: cartData.address || '',
-      disability_group: cartData.disability_group || 1,
-      registration_date: new Date().toISOString().split('T')[0],
+      document_type: 'Паспорт',
+      first_name: cartData.first_name || '',
+      name: cartData.name || '',
+      parent_name: cartData.parent_name || '',
+      sex: 'male',
+      birth_date: cartData.birth_date || '',
+      document_series: 'ID',
+      document_number: '1234567890',
+      document_issue_date: '2010-01-01',
+      document_issued_by: 'ОВД',
+      lovz_type: 'Общее заболевание',
+      lovz_group: cartData.lovz_group || 1,
+      note: '',
+      registration_oblast_id: 1,
+      registration_raion_id: 1,
+      registration_locality_id: 1,
+      living_oblast_id: 1,
+      living_raion_id: 1,
+      living_locality_id: 1,
+      registration_address: cartData.registration_address || '',
+      living_address: cartData.registration_address || '',
+      reference_msec: 'REF-001',
+      pension_certificate_number: 'PEN-001',
+      pension_certificate_issue_date: '2020-01-01',
+      msec_id: 1,
+      pension_certificate_indefinitely: false,
+      pension_certificate_term_end_date: '2025-12-31',
+      work_place: '',
+      phone_number: cartData.phone_number || '',
+      additional_phone_number: '',
+      medical_department_direct_date: undefined,
+      deregistration_date: undefined,
+      deregistration_reason: undefined,
       status: 'active',
       oblast: cartData.oblast || this.dictionaries.oblasts[0],
       raion: cartData.raion || this.dictionaries.raions[0],
       locality: cartData.locality || this.dictionaries.localities[0],
       msec: cartData.msec || this.dictionaries.msecs[0],
-      disability: cartData.disability || this.dictionaries.disabilities[0]
+      disability: cartData.disability || this.dictionaries.disabilities[0],
+      disabilities: [],
+      prosthetics_data: undefined,
+      tunduk_data: []
     };
 
     this.carts.push(newCart);
@@ -180,7 +210,7 @@ class DataService {
       filteredOrders = filteredOrders.filter(order => 
         order.number.toLowerCase().includes(search) ||
         (order.cart?.first_name || '').toLowerCase().includes(search) ||
-        (order.cart?.last_name || '').toLowerCase().includes(search)
+        (order.cart?.name || '').toLowerCase().includes(search)
       );
     }
 
@@ -206,11 +236,28 @@ class DataService {
     
     const newOrder: Order = {
       id: Math.max(...this.orders.map(o => o.id)) + 1,
+      cart_id: orderData.cart_id || this.carts[0].id,
       number: `ORD-2025-${String(Math.max(...this.orders.map(o => parseInt(o.number.split('-')[2]))) + 1).padStart(4, '0')}`,
-      cart: orderData.cart || this.carts[0],
-      order_type: orderData.order_type || 'prosthesis',
-      device_type: orderData.device_type || this.dictionaries.device_types[0],
+      create_date: new Date().toISOString().split('T')[0],
       amputation_type: orderData.amputation_type || this.dictionaries.amputation_types[0],
+      diagnosis_type_id: orderData.diagnosis_type_id || 1,
+      device_type_r_id: orderData.device_type_r_id || 1,
+      device_type_l_id: orderData.device_type_l_id || undefined,
+      quantity: orderData.quantity || 1,
+      diagnosis_side: orderData.diagnosis_side || 'right',
+      hospitalized: orderData.hospitalized || false,
+      order_type: orderData.order_type || 'prosthesis',
+      order_status: 1,
+      order_payment_type: orderData.order_payment_type || 'Бесплатно',
+      cost: orderData.cost || 0,
+      is_urgent: orderData.is_urgent || false,
+      urgent_reason: orderData.urgent_reason || undefined,
+      priority_level: orderData.priority_level || 'normal',
+      medical_examination: orderData.medical_examination || undefined,
+      note: orderData.note || '',
+      measurements: orderData.measurements || [],
+      cart: orderData.cart || this.carts[0],
+      device_type: orderData.device_type || this.dictionaries.device_types[0],
       diagnosis_type: orderData.diagnosis_type || this.dictionaries.diagnosis_types[0],
       status: 1, // Новый заказ
       created_at: new Date().toISOString(),
@@ -297,15 +344,6 @@ class DataService {
   }
 
   // Склад
-  async getWarehouseEntries(): Promise<PaginatedResponse<any>> {
-    await this.delay(300);
-    return {
-      count: this.warehouse.warehouse_entries.length,
-      next: undefined,
-      previous: undefined,
-      results: this.warehouse.warehouse_entries
-    };
-  }
 
   async getInventory(): Promise<any[]> {
     await this.delay(200);

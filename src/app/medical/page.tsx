@@ -35,7 +35,7 @@ export default function MedicalPage() {
       if (priorityFilter) params.priority = priorityFilter;
       if (dateFilter) params.date = dateFilter;
       
-      const response = await apiClient.getMedicalOrders(params);
+      const response = await apiClient.getMedicalOrders();
       setOrders(response.results);
     } catch (error) {
       console.error('Failed to load medical orders:', error);
@@ -375,13 +375,13 @@ export default function MedicalPage() {
                         <div className="flex items-center">
                           {order.number}
                           {order.is_urgent && (
-                            <AlertTriangle className="h-4 w-4 text-red-500 ml-2" title="Срочный заказ" />
+                            <AlertTriangle className="h-4 w-4 text-red-500 ml-2" />
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div>
-                          <div className="font-medium">{order.cart?.first_name || ''} {order.cart?.last_name || ''}</div>
+                          <div className="font-medium">{order.cart?.first_name || ''} {order.cart?.name || ''}</div>
                           <div className="text-gray-500 text-xs">№{order.cart?.card_number || 'Не указан'}</div>
                         </div>
                       </td>

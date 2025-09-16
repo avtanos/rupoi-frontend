@@ -43,7 +43,8 @@ export default function OverheadForm({ overhead, onSave, onCancel }: OverheadFor
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const checked = 'checked' in e.target ? e.target.checked : false;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -109,7 +110,14 @@ export default function OverheadForm({ overhead, onSave, onCancel }: OverheadFor
       setLoading(true);
       const overheadData = {
         ...formData,
-        device_count: formData.orders?.length || 0
+        device_count: formData.orders?.length || 0,
+        create_date: formData.create_date || new Date().toISOString().split('T')[0],
+        status: formData.status || 'draft',
+        total_amount: formData.total_amount || 0,
+        note: formData.note || '',
+        orders: formData.orders || [],
+        created_at: formData.created_at || new Date().toISOString(),
+        updated_at: new Date().toISOString()
       } as Overhead;
 
       await onSave(overheadData);
@@ -124,7 +132,7 @@ export default function OverheadForm({ overhead, onSave, onCancel }: OverheadFor
     const isAlreadyAdded = formData.orders?.some(item => item.order_id === order.id);
     const matchesSearch = order.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (order.cart?.first_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (order.cart?.last_name || '').toLowerCase().includes(searchTerm.toLowerCase());
+                          (order.cart?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     return !isAlreadyAdded && matchesSearch;
   });
 
@@ -273,7 +281,7 @@ export default function OverheadForm({ overhead, onSave, onCancel }: OverheadFor
                               {item.order.number}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {item.order.cart?.first_name || ''} {item.order.cart?.last_name || ''} - {item.order.device_type?.name || 'Не указан'}
+                              {item.order.cart?.first_name || ''} {item.order.cart?.name || ''} - {item.order.device_type?.name || 'Не указан'}
                             </div>
                           </div>
                           <button
@@ -329,7 +337,7 @@ export default function OverheadForm({ overhead, onSave, onCancel }: OverheadFor
                                 {order.number}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {order.cart?.first_name || ''} {order.cart?.last_name || ''} {order.cart?.middle_name || ''}
+                                {order.cart?.first_name || ''} {order.cart?.name || ''} {order.cart?.parent_name || ''}
                               </div>
                               <div className="text-sm text-gray-500">
                                 {order.device_type?.name || 'Не указан'} | {order.diagnosis_type?.name || 'Не указан'}

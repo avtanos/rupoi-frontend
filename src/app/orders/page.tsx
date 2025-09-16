@@ -382,7 +382,7 @@ export default function OrdersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div>
-                          <div className="font-medium">{order.cart?.first_name || ''} {order.cart?.last_name || ''}</div>
+                          <div className="font-medium">{order.cart?.first_name || ''} {order.cart?.name || ''}</div>
                           <div className="text-gray-500 text-xs">№{order.cart?.card_number || 'Не указан'}</div>
                         </div>
                       </td>
@@ -398,7 +398,7 @@ export default function OrdersPage() {
                             {getStatusText(order.status)}
                           </span>
                           {order.is_urgent && (
-                            <AlertTriangle className="h-4 w-4 text-red-500" title="Срочный заказ" />
+                            <AlertTriangle className="h-4 w-4 text-red-500" />
                           )}
                         </div>
                       </td>
@@ -442,7 +442,7 @@ export default function OrdersPage() {
       {/* Форма заказа */}
       {showForm && (
         <OrderForm
-          order={editingOrder}
+          order={editingOrder || undefined}
           onSave={handleSaveOrder}
           onCancel={handleCancelForm}
         />

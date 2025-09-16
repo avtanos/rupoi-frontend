@@ -52,7 +52,8 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const checked = 'checked' in e.target ? e.target.checked : false;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -80,8 +81,9 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
         ...(prev.measurements || []),
         {
           id: Date.now(),
-          measurement_type: '',
-          value: 0,
+          order_id: prev.id || 0,
+          type: 'length',
+          measurement: 0,
           unit: 'см',
           side: 'right'
         }
@@ -122,9 +124,30 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
         ...formData,
         create_date: formData.create_date || new Date().toISOString().split('T')[0],
         order_status: formData.order_status || 1,
-        order_payment_type: formData.order_payment_type || 'budget',
+        order_payment_type: formData.order_payment_type || 'Бесплатно',
         is_urgent: formData.is_urgent || false,
-        cost: formData.cost || 0
+        cost: formData.cost || 0,
+        diagnosis_side: formData.diagnosis_side || 'right',
+        hospitalized: formData.hospitalized || false,
+        order_type: formData.order_type || 'prosthesis',
+        quantity: formData.quantity || 1,
+        diagnosis_type_id: formData.diagnosis_type_id || 1,
+        device_type_r_id: formData.device_type_r_id || 1,
+        device_type_l_id: formData.device_type_l_id || undefined,
+        priority_level: formData.priority_level || 'normal',
+        urgent_reason: formData.urgent_reason || undefined,
+        medical_examination: formData.medical_examination || undefined,
+        note: formData.note || '',
+        measurements: formData.measurements || [],
+        cart: formData.cart || carts[0],
+        device_type: formData.device_type || deviceTypes[0],
+        diagnosis_type: formData.diagnosis_type || diagnosisTypes[0],
+        status: formData.status || 1,
+        created_at: formData.created_at || new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        materials: formData.materials || [],
+        works: formData.works || [],
+        employees: formData.employees || []
       } as Order;
 
       await onSave(orderData);
@@ -229,7 +252,7 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
                       <option value="">Выберите пациента</option>
                       {carts.map(cart => (
                         <option key={cart.id} value={cart.id}>
-                          {cart.last_name} {cart.first_name} {cart.middle_name} (№{cart.card_number})
+                          {cart.name} {cart.first_name} {cart.parent_name} (№{cart.card_number})
                         </option>
                       ))}
                     </select>
@@ -246,7 +269,7 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
                           <User className="h-5 w-5 text-blue-600 mr-2" />
                           <div>
                             <p className="text-sm font-medium text-blue-900">
-                              {selectedCart.last_name} {selectedCart.first_name} {selectedCart.middle_name}
+                              {selectedCart.name} {selectedCart.first_name} {selectedCart.parent_name}
                             </p>
                             <p className="text-sm text-blue-700">
                               ИНН: {selectedCart.inn} | Телефон: {selectedCart.phone_number}
@@ -511,8 +534,8 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
                         <label className="block text-sm font-medium text-gray-700">Тип измерения</label>
                         <input
                           type="text"
-                          value={measurement.measurement_type}
-                          onChange={(e) => handleMeasurementChange(index, 'measurement_type', e.target.value)}
+                          value={measurement.type}
+                          onChange={(e) => handleMeasurementChange(index, 'type', e.target.value)}
                           className="mt-1 block w-full input"
                           placeholder="Например: Длина культи"
                         />
@@ -521,8 +544,8 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
                         <label className="block text-sm font-medium text-gray-700">Значение</label>
                         <input
                           type="number"
-                          value={measurement.value}
-                          onChange={(e) => handleMeasurementChange(index, 'value', parseFloat(e.target.value) || 0)}
+                          value={measurement.measurement}
+                          onChange={(e) => handleMeasurementChange(index, 'measurement', parseFloat(e.target.value) || 0)}
                           className="mt-1 block w-full input"
                           step="0.1"
                         />

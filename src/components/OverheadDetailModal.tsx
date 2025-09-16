@@ -150,7 +150,7 @@ export default function OverheadDetailModal({ overhead, onClose }: OverheadDetai
                               <div className="flex items-center">
                                 <User className="h-3 w-3 mr-1" />
                                 <span>
-                                  {item.order.cart?.first_name || ''} {item.order.cart?.last_name || ''} {item.order.cart?.middle_name || ''}
+                                  {item.order.cart?.first_name || ''} {item.order.cart?.name || ''} {item.order.cart?.parent_name || ''}
                                 </span>
                               </div>
                               <div className="flex items-center">

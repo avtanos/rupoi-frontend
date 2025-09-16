@@ -138,7 +138,7 @@ export default function TundukIntegration({ onDataReceived }: TundukIntegrationP
                     <div className="flex items-center space-x-4">
                       <div>
                         <h4 className="text-sm font-medium text-gray-900">
-                          {data.last_name} {data.first_name} {data.parent_name}
+                          {data.name} {data.first_name} {data.parent_name}
                         </h4>
                         <p className="text-sm text-gray-500">
                           Дата рождения: {data.birth_date ? new Date(data.birth_date).toLocaleDateString('ru-RU') : 'Не указано'}

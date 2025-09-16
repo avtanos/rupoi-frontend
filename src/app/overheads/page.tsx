@@ -505,7 +505,7 @@ export default function OverheadsPage() {
       {/* Форма накладной */}
       {showForm && (
         <OverheadForm
-          overhead={editingOverhead}
+          overhead={editingOverhead || undefined}
           onSave={handleSaveOverhead}
           onCancel={handleCancelForm}
         />

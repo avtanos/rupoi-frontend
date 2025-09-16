@@ -41,7 +41,7 @@ export default function DataValidationTest() {
       }
 
       // Тест 3: Проверка районов
-      const raions = await apiClient.getRaions();
+      const raions = await apiClient.getRaions(1);
       tests.push({
         test: 'Районы загружаются',
         status: Array.isArray(raions) && raions.length > 0 ? 'pass' : 'fail',

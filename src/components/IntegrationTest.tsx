@@ -54,7 +54,7 @@ export default function IntegrationTest() {
         details: 'Загружаем районы...'
       });
 
-      const raions = await apiClient.getRaions();
+      const raions = await apiClient.getRaions(1);
       const raionsArray = Array.isArray(raions) ? raions : [];
       
       const raionsWithOblast = raionsArray.filter(r => r.oblast !== undefined);

@@ -18,6 +18,7 @@
       "document_issued_by": "ОВД г. Бишкек",
       "lovz_type": "Общее заболевание",
       "lovz_group": 2,
+      "status": "active",
       "note": "Пациент с сахарным диабетом",
       
       "registration_oblast_id": 1,
@@ -240,7 +241,7 @@
       "address": "г. Нарын, ул. Центральная, 12",
       "disability_group": 2,
       "registration_date": "2025-04-12",
-      "status": "not_registered",
+      "status": "inactive",
       "oblast": {
         "id": 4,
         "name": "Нарынская область",
