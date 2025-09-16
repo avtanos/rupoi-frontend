@@ -1,0 +1,71 @@
+{
+  "overheads": [
+    {
+      "id": 1,
+      "number": "OV-2025-001",
+      "date": "2025-09-15",
+      "shop_name": "Цех протезирования",
+      "device_count": 3,
+      "status": "confirmed",
+      "type": "Готовая продукция",
+      "orders": [
+        {
+          "id": 1,
+          "overhead_id": 1,
+          "order_id": 1,
+          "order": {
+            "id": 1,
+            "number": "ORD-2025-0156",
+            "cart": {
+              "id": 1,
+              "first_name": "Иван",
+              "last_name": "Иванов",
+              "card_number": "2025-0001"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "overhead_id": 1,
+          "order_id": 2,
+          "order": {
+            "id": 2,
+            "number": "ORD-2025-0157",
+            "cart": {
+              "id": 2,
+              "first_name": "Мария",
+              "last_name": "Петрова",
+              "card_number": "2025-0002"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "number": "OV-2025-002",
+      "date": "2025-09-16",
+      "shop_name": "Цех ортопедической обуви",
+      "device_count": 2,
+      "status": "draft",
+      "type": "Обувь",
+      "orders": [
+        {
+          "id": 3,
+          "overhead_id": 2,
+          "order_id": 3,
+          "order": {
+            "id": 3,
+            "number": "ORD-2025-0158",
+            "cart": {
+              "id": 3,
+              "first_name": "Ахмед",
+              "last_name": "Алиев",
+              "card_number": "2025-0003"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

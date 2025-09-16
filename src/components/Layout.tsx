@@ -13,7 +13,9 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  ClipboardList,
+  RefreshCw
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -25,8 +27,10 @@ const navigation = [
   { name: 'Картотека', href: '/carts', icon: Users },
   { name: 'Заказы', href: '/orders', icon: FileText },
   { name: 'Медицинский отдел', href: '/medical', icon: Stethoscope },
+  { name: 'Накладные', href: '/overheads', icon: ClipboardList },
   { name: 'Склад', href: '/warehouse', icon: Package },
   { name: 'Отчеты', href: '/reports', icon: BarChart3 },
+  { name: 'Интеграция', href: '/integration', icon: RefreshCw },
   { name: 'Настройки', href: '/settings', icon: Settings },
 ];
 
@@ -114,7 +118,6 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1" />
             <div className="flex items-center gap-x-4 lg:gap-x-6">
-              <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
               <div className="flex items-center gap-x-2">
                 <div className="text-sm">
                   <div className="font-medium text-gray-900">
@@ -140,6 +143,7 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </main>
       </div>
+
     </div>
   );
 }

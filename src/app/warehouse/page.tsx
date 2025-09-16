@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import { apiClient } from '@/lib/api';
-import { Package, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import InventoryDetailModal from '@/components/InventoryDetailModal';
+import InventoryEditModal from '@/components/InventoryEditModal';
+import WarehouseIssueModal from '@/components/WarehouseIssueModal';
+import { Package, AlertTriangle, CheckCircle, XCircle, Plus, Eye, Edit, Trash2, ArrowUpRight, Search, Filter } from 'lucide-react';
 
 interface InventoryItem {
   id: number;
@@ -20,6 +23,15 @@ interface InventoryItem {
 export default function WarehousePage() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showIssueModal, setShowIssueModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
 
   useEffect(() => {
     loadInventory();
@@ -35,6 +47,92 @@ export default function WarehousePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewDetails = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setShowDetailModal(true);
+  };
+
+  const handleEditItem = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setShowEditModal(true);
+  };
+
+  const handleAddItem = () => {
+    setSelectedItem(null);
+    setShowEditModal(true);
+  };
+
+  const handleIssueItem = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setShowIssueModal(true);
+  };
+
+  const handleDeleteItem = async (item: InventoryItem) => {
+    if (window.confirm(`Вы уверены, что хотите удалить позицию "${item.name}"?`)) {
+      try {
+        await apiClient.deleteInventoryItem(item.id);
+        await loadInventory();
+      } catch (error) {
+        console.error('Failed to delete item:', error);
+      }
+    }
+  };
+
+  const handleSaveItem = async (item: InventoryItem) => {
+    await loadInventory();
+  };
+
+  const handleIssueComplete = async () => {
+    await loadInventory();
+  };
+
+  const handleSelectItem = (itemId: number) => {
+    setSelectedItems(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === filteredInventory.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(filteredInventory.map(item => item.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedItems.length === 0) return;
+    
+    if (window.confirm(`Вы уверены, что хотите удалить ${selectedItems.length} позиций?`)) {
+      try {
+        for (const itemId of selectedItems) {
+          await apiClient.deleteInventoryItem(itemId);
+        }
+        setSelectedItems([]);
+        await loadInventory();
+      } catch (error) {
+        console.error('Failed to delete items:', error);
+      }
+    }
+  };
+
+  // Фильтрация инвентаря
+  const filteredInventory = inventory.filter(item => {
+    const matchesSearch = item.article.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+    const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+    return matchesSearch && matchesStatus && matchesCategory;
+  });
+
+  const getCategories = () => {
+    const categories = [...new Set(inventory.map(item => item.category))];
+    return categories;
   };
 
   const getStatusBadge = (status: string) => {
@@ -77,6 +175,22 @@ export default function WarehousePage() {
             <p className="mt-1 text-sm text-gray-500">
               Управление складскими запасами и готовыми изделиями
             </p>
+          </div>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Фильтры
+            </button>
+            <button
+              onClick={handleAddItem}
+              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Добавить позицию
+            </button>
           </div>
         </div>
 
@@ -134,12 +248,100 @@ export default function WarehousePage() {
           </div>
         </div>
 
+        {/* Фильтры */}
+        {showFilters && (
+          <div className="card p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Фильтры</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Поиск
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Поиск по артикулу, названию..."
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Статус
+                </label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">Все статусы</option>
+                  <option value="in_stock">В наличии</option>
+                  <option value="low_stock">Критический запас</option>
+                  <option value="out_of_stock">Нет в наличии</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Категория
+                </label>
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">Все категории</option>
+                  {getCategories().map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Массовые действия */}
+        {selectedItems.length > 0 && (
+          <div className="card p-4 bg-blue-50 border border-blue-200">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-blue-800">
+                Выбрано позиций: {selectedItems.length}
+              </span>
+              <div className="flex space-x-2">
+                <button
+                  onClick={handleBulkDelete}
+                  className="px-3 py-1 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <Trash2 className="h-4 w-4 mr-1 inline" />
+                  Удалить выбранные
+                </button>
+                <button
+                  onClick={() => setSelectedItems([])}
+                  className="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Отменить выбор
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Таблица инвентаря */}
         <div className="card p-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.length === filteredInventory.length && filteredInventory.length > 0}
+                      onChange={handleSelectAll}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Артикул
                   </th>
@@ -169,19 +371,27 @@ export default function WarehousePage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center">
+                    <td colSpan={9} className="px-6 py-4 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
                     </td>
                   </tr>
-                ) : inventory.length === 0 ? (
+                ) : filteredInventory.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
-                      Инвентарь не найден
+                    <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                      {inventory.length === 0 ? 'Инвентарь не найден' : 'Нет позиций, соответствующих фильтрам'}
                     </td>
                   </tr>
                 ) : (
-                  inventory.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
+                  filteredInventory.map((item) => (
+                    <tr key={item.id} className={`hover:bg-gray-50 ${selectedItems.includes(item.id) ? 'bg-blue-50' : ''}`}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={() => handleSelectItem(item.id)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {item.article}
                       </td>
@@ -192,7 +402,10 @@ export default function WarehousePage() {
                         {item.category}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {item.quantity} {item.unit}
+                        <div className="flex items-center">
+                          <span className="font-medium">{item.quantity}</span>
+                          <span className="ml-1 text-gray-400">{item.unit}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {item.min_quantity} {item.unit}
@@ -209,12 +422,36 @@ export default function WarehousePage() {
                         {item.price.toLocaleString('ru-RU')} сом
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <button className="text-primary-600 hover:text-primary-900">
-                            Просмотр
+                        <div className="flex space-x-1">
+                          <button
+                            onClick={() => handleViewDetails(item)}
+                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-100"
+                            title="Просмотр"
+                          >
+                            <Eye className="h-4 w-4" />
                           </button>
-                          <button className="text-yellow-600 hover:text-yellow-900">
-                            Редактировать
+                          <button
+                            onClick={() => handleEditItem(item)}
+                            className="text-yellow-600 hover:text-yellow-900 p-1 rounded hover:bg-yellow-100"
+                            title="Редактировать"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          {item.quantity > 0 && (
+                            <button
+                              onClick={() => handleIssueItem(item)}
+                              className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-100"
+                              title="Выдать со склада"
+                            >
+                              <ArrowUpRight className="h-4 w-4" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDeleteItem(item)}
+                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-100"
+                            title="Удалить"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
@@ -225,6 +462,39 @@ export default function WarehousePage() {
             </table>
           </div>
         </div>
+
+        {/* Модальные окна */}
+        {showDetailModal && (
+          <InventoryDetailModal
+            item={selectedItem}
+            onClose={() => {
+              setShowDetailModal(false);
+              setSelectedItem(null);
+            }}
+          />
+        )}
+
+        {showEditModal && (
+          <InventoryEditModal
+            item={selectedItem}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedItem(null);
+            }}
+            onSave={handleSaveItem}
+          />
+        )}
+
+        {showIssueModal && (
+          <WarehouseIssueModal
+            item={selectedItem}
+            onClose={() => {
+              setShowIssueModal(false);
+              setSelectedItem(null);
+            }}
+            onIssue={handleIssueComplete}
+          />
+        )}
       </div>
     </Layout>
   );

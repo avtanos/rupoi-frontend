@@ -1,30 +1,79 @@
 {
   "oblasts": [
-    { "id": 1, "name": "Чуйская область", "code": "CHU" },
-    { "id": 2, "name": "Ошская область", "code": "OSH" },
-    { "id": 3, "name": "Джалал-Абадская область", "code": "JAL" },
-    { "id": 4, "name": "Нарынская область", "code": "NAR" },
+    { "id": 1, "name": "город Бишкек", "code": "BISHKEK" },
+    { "id": 2, "name": "город Ош", "code": "OSH_CITY" },
+    { "id": 3, "name": "Баткенская область", "code": "BAT" },
+    { "id": 4, "name": "Джалал-Абадская область", "code": "JAL" },
     { "id": 5, "name": "Иссык-Кульская область", "code": "ISS" },
-    { "id": 6, "name": "Таласская область", "code": "TAL" },
-    { "id": 7, "name": "Баткенская область", "code": "BAT" }
+    { "id": 6, "name": "Нарынская область", "code": "NAR" },
+    { "id": 7, "name": "Ошская область", "code": "OSH" },
+    { "id": 8, "name": "Таласская область", "code": "TAL" },
+    { "id": 9, "name": "Чуйская область", "code": "CHU" }
   ],
   "raions": [
-    { "id": 1, "name": "Аламединский район", "code": "ALA", "oblast": 1 },
-    { "id": 2, "name": "Ошский район", "code": "OSH", "oblast": 2 },
-    { "id": 3, "name": "Джалал-Абадский район", "code": "JAL", "oblast": 3 },
-    { "id": 4, "name": "Нарынский район", "code": "NAR", "oblast": 4 },
-    { "id": 5, "name": "Иссык-Кульский район", "code": "ISS", "oblast": 5 },
-    { "id": 6, "name": "Таласский район", "code": "TAL", "oblast": 6 },
-    { "id": 7, "name": "Баткенский район", "code": "BAT", "oblast": 7 }
+    { "id": 1, "name": "Октябрьский район", "code": "OCT", "oblast": 1 },
+    { "id": 2, "name": "Первомайский район", "code": "MAY", "oblast": 1 },
+    { "id": 3, "name": "Свердловский район", "code": "SVER", "oblast": 1 },
+    { "id": 4, "name": "Ленинский район", "code": "LEN", "oblast": 1 },
+    { "id": 5, "name": "Баткенский район", "code": "BAT", "oblast": 3 },
+    { "id": 6, "name": "Кадамжайский район", "code": "KAD", "oblast": 3 },
+    { "id": 7, "name": "Лейлекский район", "code": "LEI", "oblast": 3 },
+    { "id": 8, "name": "Джалал-Абадский район", "code": "JAL", "oblast": 4 },
+    { "id": 9, "name": "Аксыйский район", "code": "AKS", "oblast": 4 },
+    { "id": 10, "name": "Ала-Букинский район", "code": "ALB", "oblast": 4 },
+    { "id": 11, "name": "Базар-Коргонский район", "code": "BAZ", "oblast": 4 },
+    { "id": 12, "name": "Ноокенский район", "code": "NOO", "oblast": 4 },
+    { "id": 13, "name": "Сузакский район", "code": "SUZ", "oblast": 4 },
+    { "id": 14, "name": "Тогуз-Тороуский район", "code": "TOG", "oblast": 4 },
+    { "id": 15, "name": "Токтогульский район", "code": "TOK", "oblast": 4 },
+    { "id": 16, "name": "Чаткальский район", "code": "CHA", "oblast": 4 },
+    { "id": 17, "name": "Иссык-Кульский район", "code": "ISS", "oblast": 5 },
+    { "id": 18, "name": "Ак-Суйский район", "code": "AKS", "oblast": 5 },
+    { "id": 19, "name": "Жети-Огузский район", "code": "ZHE", "oblast": 5 },
+    { "id": 20, "name": "Тонский район", "code": "TON", "oblast": 5 },
+    { "id": 21, "name": "Тюпский район", "code": "TYU", "oblast": 5 },
+    { "id": 22, "name": "Нарынский район", "code": "NAR", "oblast": 6 },
+    { "id": 23, "name": "Ак-Талинский район", "code": "AKT", "oblast": 6 },
+    { "id": 24, "name": "Ат-Башинский район", "code": "ATB", "oblast": 6 },
+    { "id": 25, "name": "Жумгальский район", "code": "ZHU", "oblast": 6 },
+    { "id": 26, "name": "Кочкорский район", "code": "KOC", "oblast": 6 },
+    { "id": 27, "name": "Ошский район", "code": "OSH", "oblast": 7 },
+    { "id": 28, "name": "Алайский район", "code": "ALA", "oblast": 7 },
+    { "id": 29, "name": "Араванский район", "code": "ARA", "oblast": 7 },
+    { "id": 30, "name": "Кара-Кульджинский район", "code": "KAR", "oblast": 7 },
+    { "id": 31, "name": "Кара-Сууский район", "code": "KAS", "oblast": 7 },
+    { "id": 32, "name": "Ноокатский район", "code": "NOO", "oblast": 7 },
+    { "id": 33, "name": "Узгенский район", "code": "UZG", "oblast": 7 },
+    { "id": 34, "name": "Чон-Алайский район", "code": "CHO", "oblast": 7 },
+    { "id": 35, "name": "Таласский район", "code": "TAL", "oblast": 8 },
+    { "id": 36, "name": "Бакай-Атинский район", "code": "BAK", "oblast": 8 },
+    { "id": 37, "name": "Кара-Бууринский район", "code": "KAB", "oblast": 8 },
+    { "id": 38, "name": "Манасский район", "code": "MAN", "oblast": 8 },
+    { "id": 39, "name": "Чуйский район", "code": "CHU", "oblast": 9 },
+    { "id": 40, "name": "Аламединский район", "code": "ALM", "oblast": 9 },
+    { "id": 41, "name": "Жайылский район", "code": "ZHA", "oblast": 9 },
+    { "id": 42, "name": "Иссык-Атинский район", "code": "ISA", "oblast": 9 },
+    { "id": 43, "name": "Кеминский район", "code": "KEM", "oblast": 9 },
+    { "id": 44, "name": "Московский район", "code": "MOS", "oblast": 9 },
+    { "id": 45, "name": "Панфиловский район", "code": "PAN", "oblast": 9 },
+    { "id": 46, "name": "Сокулукский район", "code": "SOK", "oblast": 9 }
   ],
   "localities": [
-    { "id": 1, "name": "с. Аламедин", "code": "ALA001", "raion": 1 },
-    { "id": 2, "name": "г. Ош", "code": "OSH001", "raion": 2 },
-    { "id": 3, "name": "г. Джалал-Абад", "code": "JAL001", "raion": 3 },
-    { "id": 4, "name": "г. Нарын", "code": "NAR001", "raion": 4 },
-    { "id": 5, "name": "г. Каракол", "code": "ISS001", "raion": 5 },
-    { "id": 6, "name": "г. Талас", "code": "TAL001", "raion": 6 },
-    { "id": 7, "name": "г. Баткен", "code": "BAT001", "raion": 7 }
+    { "id": 1, "name": "г. Бишкек", "code": "BISHKEK", "raion": 1 },
+    { "id": 2, "name": "г. Ош", "code": "OSH_CITY", "raion": 27 },
+    { "id": 3, "name": "г. Джалал-Абад", "code": "JAL_CITY", "raion": 8 },
+    { "id": 4, "name": "г. Нарын", "code": "NAR_CITY", "raion": 22 },
+    { "id": 5, "name": "г. Каракол", "code": "KARAKOL", "raion": 17 },
+    { "id": 6, "name": "г. Талас", "code": "TALAS", "raion": 35 },
+    { "id": 7, "name": "г. Баткен", "code": "BATKEN", "raion": 5 },
+    { "id": 8, "name": "г. Кант", "code": "KANT", "raion": 39 },
+    { "id": 9, "name": "г. Кара-Балта", "code": "KARABALTA", "raion": 39 },
+    { "id": 10, "name": "г. Токмок", "code": "TOKMOK", "raion": 39 },
+    { "id": 11, "name": "г. Чолпон-Ата", "code": "CHOLPON", "raion": 17 },
+    { "id": 12, "name": "г. Балыкчы", "code": "BALYKCHY", "raion": 17 },
+    { "id": 13, "name": "г. Кызыл-Кия", "code": "KYZYL", "raion": 5 },
+    { "id": 14, "name": "г. Сулюкта", "code": "SULUKTA", "raion": 5 },
+    { "id": 15, "name": "г. Узген", "code": "UZGEN", "raion": 33 }
   ],
   "msecs": [
     { "id": 1, "name": "МСЭ №1 г. Бишкек", "code": "MSE001", "locality": 1 },
@@ -42,25 +91,39 @@
     { "id": 4, "name": "Инвалидность по профессиональному заболеванию", "code": "PROFESSIONAL" }
   ],
   "device_types": [
-    { "id": 1, "name": "Протез бедра", "code": "HIP_PROSTHESIS" },
-    { "id": 2, "name": "Протез голени", "code": "LEG_PROSTHESIS" },
-    { "id": 3, "name": "Протез стопы", "code": "FOOT_PROSTHESIS" },
-    { "id": 4, "name": "Ортопедическая обувь", "code": "ORTHOPEDIC_SHOES" },
-    { "id": 5, "name": "Ортез колена", "code": "KNEE_ORTHOSIS" },
-    { "id": 6, "name": "Ортез голеностопа", "code": "ANKLE_ORTHOSIS" }
+    { "id": 1, "name": "Протез бедра левый", "code": "LEFT_HIP_PROSTHESIS", "order_type": 1 },
+    { "id": 2, "name": "Протез бедра правый", "code": "RIGHT_HIP_PROSTHESIS", "order_type": 1 },
+    { "id": 3, "name": "Протез голени левый", "code": "LEFT_LEG_PROSTHESIS", "order_type": 1 },
+    { "id": 4, "name": "Протез голени правый", "code": "RIGHT_LEG_PROSTHESIS", "order_type": 1 },
+    { "id": 5, "name": "Протез стопы левый", "code": "LEFT_FOOT_PROSTHESIS", "order_type": 1 },
+    { "id": 6, "name": "Протез стопы правый", "code": "RIGHT_FOOT_PROSTHESIS", "order_type": 1 },
+    { "id": 7, "name": "Ортопедическая обувь левая", "code": "LEFT_ORTHOPEDIC_SHOES", "order_type": 0 },
+    { "id": 8, "name": "Ортопедическая обувь правая", "code": "RIGHT_ORTHOPEDIC_SHOES", "order_type": 0 },
+    { "id": 9, "name": "Отто-бок левый", "code": "LEFT_OTTO_BOCK", "order_type": 2 },
+    { "id": 10, "name": "Отто-бок правый", "code": "RIGHT_OTTO_BOCK", "order_type": 2 },
+    { "id": 11, "name": "Ремонт протеза", "code": "PROSTHESIS_REPAIR", "order_type": 3 },
+    { "id": 12, "name": "Ремонт обуви", "code": "SHOE_REPAIR", "order_type": 3 },
+    { "id": 13, "name": "Ортез колена левый", "code": "LEFT_KNEE_ORTHOSIS", "order_type": 1 },
+    { "id": 14, "name": "Ортез колена правый", "code": "RIGHT_KNEE_ORTHOSIS", "order_type": 1 },
+    { "id": 15, "name": "Ортез голеностопа левый", "code": "LEFT_ANKLE_ORTHOSIS", "order_type": 1 },
+    { "id": 16, "name": "Ортез голеностопа правый", "code": "RIGHT_ANKLE_ORTHOSIS", "order_type": 1 }
   ],
   "amputation_types": [
-    { "id": 1, "name": "Ампутация бедра", "code": "HIP_AMPUTATION" },
-    { "id": 2, "name": "Ампутация голени", "code": "LEG_AMPUTATION" },
-    { "id": 3, "name": "Ампутация стопы", "code": "FOOT_AMPUTATION" },
-    { "id": 4, "name": "Без ампутации", "code": "NO_AMPUTATION" }
+    { "id": 10001, "name": "Ампутация нижних конечностей", "code": "LOWER_LIMB" },
+    { "id": 10002, "name": "Ампутация верхних конечностей", "code": "UPPER_LIMB" },
+    { "id": 10003, "name": "Нет", "code": "NO_AMPUTATION" }
   ],
   "diagnosis_types": [
-    { "id": 1, "name": "Сахарный диабет", "code": "DIABETES" },
-    { "id": 2, "name": "Травма", "code": "TRAUMA" },
-    { "id": 3, "name": "Врожденная патология", "code": "CONGENITAL" },
-    { "id": 4, "name": "Онкологическое заболевание", "code": "ONCOLOGY" },
-    { "id": 5, "name": "Сосудистые заболевания", "code": "VASCULAR" }
+    { "id": 1, "name": "Левого бедра", "code": "LEFT_THIGH" },
+    { "id": 2, "name": "Правого бедра", "code": "RIGHT_THIGH" },
+    { "id": 3, "name": "Левой голени", "code": "LEFT_LEG" },
+    { "id": 4, "name": "Правой голени", "code": "RIGHT_LEG" },
+    { "id": 5, "name": "Левого плеча", "code": "LEFT_SHOULDER" },
+    { "id": 6, "name": "Правого плеча", "code": "RIGHT_SHOULDER" },
+    { "id": 7, "name": "Обеих плеч", "code": "BOTH_SHOULDERS" },
+    { "id": 8, "name": "Левого предплечья", "code": "LEFT_FOREARM" },
+    { "id": 9, "name": "Правого предплечья", "code": "RIGHT_FOREARM" },
+    { "id": 10, "name": "Обеих предплечий", "code": "BOTH_FOREARMS" }
   ],
   "materials": [
     { "id": 1, "name": "Титан", "code": "TITANIUM", "unit": "кг", "price": 15000 },
@@ -84,5 +147,128 @@
     { "id": 3, "first_name": "Ортопед", "last_name": "Султанов", "position": "Мастер-ортопед", "department": "Производство", "is_active": true },
     { "id": 4, "first_name": "Кладовщик", "last_name": "Усманов", "position": "Складской работник", "department": "Склад", "is_active": true },
     { "id": 5, "first_name": "Складской", "last_name": "Работник", "position": "Кладовщик", "department": "Склад", "is_active": true }
+  ],
+  "stump_forms": [
+    { "id": 1, "name": "Цилиндрическая", "code": "CYLINDRICAL" },
+    { "id": 2, "name": "Булавовидная", "code": "CLUB_SHAPED" },
+    { "id": 3, "name": "Умеренно-коническая", "code": "MODERATE_CONICAL" },
+    { "id": 4, "name": "Резко-коническая", "code": "SHARP_CONICAL" },
+    { "id": 5, "name": "Избыток ткани", "code": "EXCESS_TISSUE" },
+    { "id": 6, "name": "Атрофия", "code": "ATROPHY" }
+  ],
+  "scar_types": [
+    { "id": 1, "name": "Линейный", "code": "LINEAR" },
+    { "id": 2, "name": "Звездчатый", "code": "STAR_SHAPED" },
+    { "id": 3, "name": "Центральный", "code": "CENTRAL" },
+    { "id": 4, "name": "Передний", "code": "ANTERIOR" },
+    { "id": 5, "name": "Задний", "code": "POSTERIOR" },
+    { "id": 6, "name": "Боковой", "code": "LATERAL" },
+    { "id": 7, "name": "Подвижный", "code": "MOBILE" },
+    { "id": 8, "name": "Спаянный", "code": "ADHERENT" },
+    { "id": 9, "name": "Безболезненный", "code": "PAINLESS" },
+    { "id": 10, "name": "Келоидный", "code": "KELOID" }
+  ],
+  "skin_condition_types": [
+    { "id": 1, "name": "Нормальный", "code": "NORMAL" },
+    { "id": 2, "name": "Нинюшный", "code": "MOIST" },
+    { "id": 3, "name": "Отечный", "code": "EDEMATOUS" },
+    { "id": 4, "name": "Потертости", "code": "ABRASIONS" },
+    { "id": 5, "name": "Трещины", "code": "CRACKS" },
+    { "id": 6, "name": "Язвы", "code": "ULCERS" },
+    { "id": 7, "name": "Свищи", "code": "FISTULAS" },
+    { "id": 8, "name": "Невромы", "code": "NEUROMAS" }
+  ],
+  "bone_dust_types": [
+    { "id": 1, "name": "Болезненный", "code": "PAINFUL" },
+    { "id": 2, "name": "Безболезненный", "code": "PAINLESS" },
+    { "id": 3, "name": "Неровный", "code": "ROUGH" },
+    { "id": 4, "name": "Гладкий", "code": "SMOOTH" },
+    { "id": 5, "name": "Остеофиты", "code": "OSTEOPHYTES" }
+  ],
+  "shoe_models": [
+    { "id": 1, "name": "Классическая", "code": "CLASSIC" },
+    { "id": 2, "name": "Спортивная", "code": "SPORT" },
+    { "id": 3, "name": "Официальная", "code": "FORMAL" }
+  ],
+  "shoe_colors": [
+    { "id": 1, "name": "Черный", "code": "BLACK" },
+    { "id": 2, "name": "Красный", "code": "RED" },
+    { "id": 3, "name": "Комбинированный", "code": "COMBINED" },
+    { "id": 4, "name": "Бордовый", "code": "BURGUNDY" },
+    { "id": 5, "name": "Коричневый", "code": "BROWN" },
+    { "id": 6, "name": "Серый", "code": "GRAY" },
+    { "id": 7, "name": "Белый", "code": "WHITE" }
+  ],
+  "heel_materials": [
+    { "id": 1, "name": "Микропористая", "code": "MICROPOROUS" },
+    { "id": 2, "name": "Полиуретановая", "code": "POLYURETHANE" },
+    { "id": 3, "name": "Резина", "code": "RUBBER" },
+    { "id": 4, "name": "Пластик", "code": "PLASTIC" },
+    { "id": 5, "name": "Кожа", "code": "LEATHER" }
+  ],
+  "device_materials": [
+    { "id": 1, "device_type_id": 1, "material_id": 1, "is_required": true },
+    { "id": 2, "device_type_id": 1, "material_id": 2, "is_required": true },
+    { "id": 3, "device_type_id": 2, "material_id": 1, "is_required": true },
+    { "id": 4, "device_type_id": 2, "material_id": 2, "is_required": true },
+    { "id": 5, "device_type_id": 7, "material_id": 3, "is_required": true },
+    { "id": 6, "device_type_id": 8, "material_id": 3, "is_required": true }
+  ],
+  "order_statuses": [
+    { "id": 1, "name": "Новый", "code": "NEW" },
+    { "id": 2, "name": "В работе", "code": "IN_PROGRESS" },
+    { "id": 3, "name": "Утвержден", "code": "APPROVED" },
+    { "id": 4, "name": "Отклонен", "code": "REJECTED" },
+    { "id": 5, "name": "Готов", "code": "READY" },
+    { "id": 6, "name": "Выдан", "code": "ISSUED" },
+    { "id": 7, "name": "Отменен", "code": "CANCELLED" }
+  ],
+  "priority_levels": [
+    { "id": 1, "name": "Обычный", "code": "NORMAL" },
+    { "id": 2, "name": "Высокий", "code": "HIGH" },
+    { "id": 3, "name": "Срочный", "code": "URGENT" }
+  ],
+  "document_types": [
+    { "id": 1, "name": "Паспорт", "code": "PASSPORT" },
+    { "id": 2, "name": "Свидетельство о рождении", "code": "BIRTH_CERTIFICATE" },
+    { "id": 3, "name": "Пенсионное удостоверение", "code": "PENSION_CERTIFICATE" },
+    { "id": 4, "name": "Справка об инвалидности", "code": "DISABILITY_CERTIFICATE" },
+    { "id": 5, "name": "Медицинская справка", "code": "MEDICAL_CERTIFICATE" }
+  ],
+  "passport_series": [
+    { "id": 1, "name": "АА", "code": "AA" },
+    { "id": 2, "name": "АБ", "code": "AB" },
+    { "id": 3, "name": "АВ", "code": "AV" },
+    { "id": 4, "name": "АГ", "code": "AG" },
+    { "id": 5, "name": "АД", "code": "AD" },
+    { "id": 6, "name": "АЕ", "code": "AE" },
+    { "id": 7, "name": "АЖ", "code": "AZH" },
+    { "id": 8, "name": "АЗ", "code": "AZ" },
+    { "id": 9, "name": "АИ", "code": "AI" },
+    { "id": 10, "name": "АК", "code": "AK" }
+  ],
+  "age_groups": [
+    { "id": 1, "name": "Дети (0-17 лет)", "code": "CHILDREN", "min_age": 0, "max_age": 17 },
+    { "id": 2, "name": "Взрослые (18-59 лет)", "code": "ADULTS", "min_age": 18, "max_age": 59 },
+    { "id": 3, "name": "Пожилые (60+ лет)", "code": "ELDERLY", "min_age": 60, "max_age": 120 }
+  ],
+  "disability_categories": [
+    { "id": 1, "name": "I группа", "code": "GROUP_1" },
+    { "id": 2, "name": "II группа", "code": "GROUP_2" },
+    { "id": 3, "name": "III группа", "code": "GROUP_3" },
+    { "id": 4, "name": "Ребенок-инвалид", "code": "CHILD_DISABLED" }
+  ],
+  "disability_causes": [
+    { "id": 1, "name": "Общее заболевание", "code": "GENERAL_DISEASE" },
+    { "id": 2, "name": "Трудовая травма", "code": "WORK_INJURY" },
+    { "id": 3, "name": "Профессиональное заболевание", "code": "OCCUPATIONAL_DISEASE" },
+    { "id": 4, "name": "Военная травма", "code": "MILITARY_INJURY" },
+    { "id": 5, "name": "Врожденная патология", "code": "CONGENITAL" },
+    { "id": 6, "name": "Дорожно-транспортное происшествие", "code": "TRAFFIC_ACCIDENT" }
+  ],
+  "service_types": [
+    { "id": 1, "name": "Платная", "code": "PAID" },
+    { "id": 2, "name": "Бесплатная", "code": "FREE" },
+    { "id": 3, "name": "Льготная", "code": "DISCOUNTED" }
   ]
 }

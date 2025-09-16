@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
+import OrderForm from '@/components/OrderForm';
 import { Order } from '@/types';
 import { apiClient } from '@/lib/api';
-import { Search, Plus, Eye, Edit, Package } from 'lucide-react';
+import { Search, Plus, Eye, Edit, Package, Trash2, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -12,6 +13,9 @@ export default function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+  const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
 
   useEffect(() => {
     loadOrders();
@@ -31,6 +35,99 @@ export default function OrdersPage() {
       console.error('Failed to load orders:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateOrder = () => {
+    setEditingOrder(null);
+    setShowForm(true);
+  };
+
+  const handleEditOrder = (order: Order) => {
+    setEditingOrder(order);
+    setShowForm(true);
+  };
+
+  const handleSaveOrder = async (orderData: Order) => {
+    try {
+      if (editingOrder) {
+        // Обновление существующего заказа
+        const updatedOrder = await apiClient.updateOrder(editingOrder.id, orderData);
+        setOrders(prev => prev.map(order => order.id === editingOrder.id ? updatedOrder : order));
+      } else {
+        // Создание нового заказа
+        const newOrder = await apiClient.createOrder(orderData);
+        setOrders(prev => [newOrder, ...prev]);
+      }
+      setShowForm(false);
+      setEditingOrder(null);
+    } catch (error) {
+      console.error('Failed to save order:', error);
+    }
+  };
+
+  const handleCancelForm = () => {
+    setShowForm(false);
+    setEditingOrder(null);
+  };
+
+  const handleDeleteOrder = async (orderId: number) => {
+    if (window.confirm('Вы уверены, что хотите удалить этот заказ?')) {
+      try {
+        await apiClient.deleteOrder(orderId);
+        setOrders(prev => prev.filter(order => order.id !== orderId));
+      } catch (error) {
+        console.error('Failed to delete order:', error);
+      }
+    }
+  };
+
+  const handleStatusChange = async (orderId: number, newStatus: number) => {
+    try {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        const updatedOrder = await apiClient.updateOrder(orderId, { ...order, status: newStatus });
+        setOrders(prev => prev.map(o => o.id === orderId ? updatedOrder : o));
+      }
+    } catch (error) {
+      console.error('Failed to update status:', error);
+    }
+  };
+
+  const handleSelectOrder = (orderId: number) => {
+    setSelectedOrders(prev => 
+      prev.includes(orderId) 
+        ? prev.filter(id => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedOrders.length === orders.length) {
+      setSelectedOrders([]);
+    } else {
+      setSelectedOrders(orders.map(order => order.id));
+    }
+  };
+
+  const handleBulkStatusChange = async (newStatus: number) => {
+    if (selectedOrders.length === 0) return;
+    
+    try {
+      const promises = selectedOrders.map(orderId => {
+        const order = orders.find(o => o.id === orderId);
+        return order ? apiClient.updateOrder(orderId, { ...order, status: newStatus }) : Promise.resolve();
+      });
+      
+      await Promise.all(promises);
+      setOrders(prev => prev.map(order => 
+        selectedOrders.includes(order.id) 
+          ? { ...order, status: newStatus }
+          : order
+      ));
+      setSelectedOrders([]);
+    } catch (error) {
+      console.error('Failed to update statuses:', error);
     }
   };
 
@@ -78,7 +175,10 @@ export default function OrdersPage() {
               Создание и управление заказами на протезно-ортопедические изделия
             </p>
           </div>
-          <button className="btn btn-primary">
+          <button 
+            onClick={handleCreateOrder}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Новый заказ
           </button>
@@ -181,12 +281,55 @@ export default function OrdersPage() {
           </div>
         </div>
 
+        {/* Массовые действия */}
+        {selectedOrders.length > 0 && (
+          <div className="card p-4 bg-blue-50 border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <span className="text-sm font-medium text-blue-900">
+                  Выбрано заказов: {selectedOrders.length}
+                </span>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleBulkStatusChange(2)}
+                  className="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700 flex items-center"
+                >
+                  <Clock className="h-3 w-3 mr-1" />
+                  В работу
+                </button>
+                <button
+                  onClick={() => handleBulkStatusChange(3)}
+                  className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 flex items-center"
+                >
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Готово
+                </button>
+                <button
+                  onClick={() => setSelectedOrders([])}
+                  className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
+                >
+                  Отменить
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Таблица заказов */}
         <div className="card p-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectedOrders.length === orders.length && orders.length > 0}
+                      onChange={handleSelectAll}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     № заказа
                   </th>
@@ -213,46 +356,77 @@ export default function OrdersPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center">
+                    <td colSpan={8} className="px-6 py-4 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
                     </td>
                   </tr>
                 ) : orders.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
                       Заказы не найдены
                     </td>
                   </tr>
                 ) : (
                   orders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50">
+                    <tr key={order.id} className={`hover:bg-gray-50 ${selectedOrders.includes(order.id) ? 'bg-blue-50' : ''}`}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input
+                          type="checkbox"
+                          checked={selectedOrders.includes(order.id)}
+                          onChange={() => handleSelectOrder(order.id)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {order.number}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {order.cart.first_name} {order.cart.last_name}
+                        <div>
+                          <div className="font-medium">{order.cart?.first_name || ''} {order.cart?.last_name || ''}</div>
+                          <div className="text-gray-500 text-xs">№{order.cart?.card_number || 'Не указан'}</div>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {getTypeText(order.order_type)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {order.device_type.name}
+                        {order.device_type?.name || 'Не указан'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={getStatusBadge(order.status)}>
-                          {getStatusText(order.status)}
-                        </span>
+                        <div className="flex items-center space-x-2">
+                          <span className={getStatusBadge(order.status)}>
+                            {getStatusText(order.status)}
+                          </span>
+                          {order.is_urgent && (
+                            <AlertTriangle className="h-4 w-4 text-red-500" title="Срочный заказ" />
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(order.created_at).toLocaleDateString('ru-RU')}
+                        {order.created_at ? new Date(order.created_at).toLocaleDateString('ru-RU') : 'Не указано'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <button className="text-primary-600 hover:text-primary-900">
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          <button className="text-yellow-600 hover:text-yellow-900">
+                        <div className="flex space-x-1">
+                          <button 
+                            onClick={() => handleEditOrder(order)}
+                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-100"
+                            title="Редактировать"
+                          >
                             <Edit className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleStatusChange(order.id, order.status === 1 ? 2 : order.status + 1)}
+                            className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-100"
+                            title="Изменить статус"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteOrder(order.id)}
+                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-100"
+                            title="Удалить"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
@@ -264,6 +438,15 @@ export default function OrdersPage() {
           </div>
         </div>
       </div>
+
+      {/* Форма заказа */}
+      {showForm && (
+        <OrderForm
+          order={editingOrder}
+          onSave={handleSaveOrder}
+          onCancel={handleCancelForm}
+        />
+      )}
     </Layout>
   );
 }

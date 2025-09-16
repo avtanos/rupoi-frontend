@@ -218,7 +218,7 @@ export default function Dashboard() {
                     {order.number}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {order.cart.first_name} {order.cart.last_name}
+                    {order.cart?.first_name || ''} {order.cart?.last_name || ''}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {order.order_type}
@@ -231,7 +231,7 @@ export default function Dashboard() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(order.created_at).toLocaleDateString('ru-RU')}
+                    {order.created_at ? new Date(order.created_at).toLocaleDateString('ru-RU') : 'Не указано'}
                   </td>
                 </tr>
               )) || (

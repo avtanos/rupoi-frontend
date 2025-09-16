@@ -71,13 +71,21 @@ class ApiClient {
     return dataService.updateOrder(id, order);
   }
 
+  async deleteOrder(id: number): Promise<void> {
+    return dataService.deleteOrder(id);
+  }
+
   // Medical Orders
   async getMedicalOrders(): Promise<PaginatedResponse<Order>> {
     return dataService.getMedicalOrders();
   }
 
-  async approveOrder(id: number): Promise<Order> {
-    return dataService.approveOrder(id);
+  async approveOrder(id: number, examinationData?: any): Promise<Order> {
+    return dataService.approveOrder(id, examinationData);
+  }
+
+  async rejectOrder(id: number, examinationData?: any): Promise<Order> {
+    return dataService.rejectOrder(id, examinationData);
   }
 
   // Production Orders
@@ -150,6 +158,123 @@ class ApiClient {
 
   async getEmployees(): Promise<any[]> {
     return dataService.getEmployees();
+  }
+
+  // Накладные
+  async getOverheads(): Promise<PaginatedResponse<any>> {
+    return dataService.getOverheads();
+  }
+
+  async getOverhead(id: number): Promise<any> {
+    return dataService.getOverhead(id);
+  }
+
+  async createOverhead(overhead: any): Promise<any> {
+    return dataService.createOverhead(overhead);
+  }
+
+  async updateOverhead(id: number, overhead: any): Promise<any> {
+    return dataService.updateOverhead(id, overhead);
+  }
+
+  async deleteOverhead(id: number): Promise<void> {
+    return dataService.deleteOverhead(id);
+  }
+
+  // Новые справочники
+  async getStumpForms(): Promise<any[]> {
+    return dataService.getStumpForms();
+  }
+
+  async getScarTypes(): Promise<any[]> {
+    return dataService.getScarTypes();
+  }
+
+  async getSkinConditionTypes(): Promise<any[]> {
+    return dataService.getSkinConditionTypes();
+  }
+
+  async getBoneDustTypes(): Promise<any[]> {
+    return dataService.getBoneDustTypes();
+  }
+
+  async getShoeModels(): Promise<any[]> {
+    return dataService.getShoeModels();
+  }
+
+  async getShoeColors(): Promise<any[]> {
+    return dataService.getShoeColors();
+  }
+
+  async getHeelMaterials(): Promise<any[]> {
+    return dataService.getHeelMaterials();
+  }
+
+  // Новые справочники
+  async getDeviceMaterials(): Promise<any[]> {
+    return dataService.getDeviceMaterials();
+  }
+
+  async getOrderStatuses(): Promise<any[]> {
+    return dataService.getOrderStatuses();
+  }
+
+  async getPriorityLevels(): Promise<any[]> {
+    return dataService.getPriorityLevels();
+  }
+
+  async getDocumentTypes(): Promise<any[]> {
+    return dataService.getDocumentTypes();
+  }
+
+  async getPassportSeries(): Promise<any[]> {
+    return dataService.getPassportSeries();
+  }
+
+  async getAgeGroups(): Promise<any[]> {
+    return dataService.getAgeGroups();
+  }
+
+  async getDisabilityCategories(): Promise<any[]> {
+    return dataService.getDisabilityCategories();
+  }
+
+  async getDisabilityCauses(): Promise<any[]> {
+    return dataService.getDisabilityCauses();
+  }
+
+  async getServiceTypes(): Promise<any[]> {
+    return dataService.getServiceTypes();
+  }
+
+  // Склад - операции с инвентарем
+  async createInventoryItem(itemData: any): Promise<any> {
+    return dataService.createInventoryItem(itemData);
+  }
+
+  async updateInventoryItem(id: number, itemData: any): Promise<any> {
+    return dataService.updateInventoryItem(id, itemData);
+  }
+
+  async deleteInventoryItem(id: number): Promise<void> {
+    return dataService.deleteInventoryItem(id);
+  }
+
+  async issueFromWarehouse(issueData: any): Promise<any> {
+    return dataService.issueFromWarehouse(issueData);
+  }
+
+  async getWarehouseEntries(): Promise<any[]> {
+    return dataService.getWarehouseEntries();
+  }
+
+  async getWarehouseIssues(): Promise<any[]> {
+    return dataService.getWarehouseIssues();
+  }
+
+  // Справочник инвалидности
+  async getDisabilities(): Promise<any[]> {
+    return dataService.getDisabilities();
   }
 }
 

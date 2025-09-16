@@ -15,6 +15,7 @@ import ordersData from '@/data/orders.json';
 import warehouseData from '@/data/warehouse.json';
 import reportsData from '@/data/reports.json';
 import dictionariesData from '@/data/dictionaries.json';
+import overheadsData from '@/data/overheads.json';
 
 class DataService {
   private users: User[] = usersData.users;
@@ -23,6 +24,7 @@ class DataService {
   private warehouse = warehouseData;
   private reports = reportsData;
   private dictionaries = dictionariesData;
+  private overheads = overheadsData.overheads;
 
   // Симуляция задержки API
   private delay(ms: number = 500): Promise<void> {
@@ -177,8 +179,8 @@ class DataService {
       const search = params.search.toLowerCase();
       filteredOrders = filteredOrders.filter(order => 
         order.number.toLowerCase().includes(search) ||
-        order.cart.first_name.toLowerCase().includes(search) ||
-        order.cart.last_name.toLowerCase().includes(search)
+        (order.cart?.first_name || '').toLowerCase().includes(search) ||
+        (order.cart?.last_name || '').toLowerCase().includes(search)
       );
     }
 
@@ -238,6 +240,15 @@ class DataService {
     return this.orders[orderIndex];
   }
 
+  async deleteOrder(id: number): Promise<void> {
+    await this.delay(100);
+    const index = this.orders.findIndex(o => o.id === id);
+    if (index === -1) {
+      throw new Error('Заказ не найден');
+    }
+    this.orders.splice(index, 1);
+  }
+
   // Медицинские заказы
   async getMedicalOrders(): Promise<PaginatedResponse<Order>> {
     await this.delay(300);
@@ -251,9 +262,20 @@ class DataService {
     };
   }
 
-  async approveOrder(id: number): Promise<Order> {
+  async approveOrder(id: number, examinationData?: any): Promise<Order> {
     await this.delay(400);
-    return this.updateOrder(id, { status: 2 }); // Переводим в статус "утвержден"
+    return this.updateOrder(id, { 
+      status: 3, // Утвержден
+      ...(examinationData && { medical_examination: examinationData })
+    });
+  }
+
+  async rejectOrder(id: number, examinationData?: any): Promise<Order> {
+    await this.delay(400);
+    return this.updateOrder(id, { 
+      status: 4, // Отклонен
+      ...(examinationData && { medical_examination: examinationData })
+    });
   }
 
   // Производственные заказы
@@ -363,6 +385,215 @@ class DataService {
   async getEmployees(): Promise<any[]> {
     await this.delay(100);
     return this.dictionaries.employees;
+  }
+
+  // Накладные
+  async getOverheads(): Promise<PaginatedResponse<any>> {
+    await this.delay(300);
+    return {
+      count: this.overheads.length,
+      next: undefined,
+      previous: undefined,
+      results: this.overheads
+    };
+  }
+
+  async getOverhead(id: number): Promise<any> {
+    await this.delay(200);
+    const overhead = this.overheads.find(o => o.id === id);
+    if (!overhead) {
+      throw new Error('Накладная не найдена');
+    }
+    return overhead;
+  }
+
+  async createOverhead(overheadData: any): Promise<any> {
+    await this.delay(400);
+    const newOverhead = {
+      id: Math.max(...this.overheads.map(o => o.id)) + 1,
+      number: `OV-2025-${String(Math.max(...this.overheads.map(o => parseInt(o.number.split('-')[2]))) + 1).padStart(3, '0')}`,
+      date: new Date().toISOString().split('T')[0],
+      ...overheadData,
+      orders: []
+    };
+    this.overheads.push(newOverhead);
+    return newOverhead;
+  }
+
+  async updateOverhead(id: number, overheadData: any): Promise<any> {
+    await this.delay(400);
+    const overheadIndex = this.overheads.findIndex(o => o.id === id);
+    if (overheadIndex === -1) {
+      throw new Error('Накладная не найдена');
+    }
+    this.overheads[overheadIndex] = { ...this.overheads[overheadIndex], ...overheadData };
+    return this.overheads[overheadIndex];
+  }
+
+  async deleteOverhead(id: number): Promise<void> {
+    await this.delay(100);
+    const index = this.overheads.findIndex(o => o.id === id);
+    if (index === -1) {
+      throw new Error('Накладная не найдена');
+    }
+    this.overheads.splice(index, 1);
+  }
+
+  // Новые справочники
+  async getStumpForms(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.stump_forms;
+  }
+
+  async getScarTypes(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.scar_types;
+  }
+
+  async getSkinConditionTypes(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.skin_condition_types;
+  }
+
+  async getBoneDustTypes(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.bone_dust_types;
+  }
+
+  async getShoeModels(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.shoe_models;
+  }
+
+  async getShoeColors(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.shoe_colors;
+  }
+
+  async getHeelMaterials(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.heel_materials;
+  }
+
+  // Новые справочники
+  async getDeviceMaterials(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.device_materials;
+  }
+
+  async getOrderStatuses(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.order_statuses;
+  }
+
+  async getPriorityLevels(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.priority_levels;
+  }
+
+  async getDocumentTypes(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.document_types;
+  }
+
+  async getPassportSeries(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.passport_series;
+  }
+
+  async getAgeGroups(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.age_groups;
+  }
+
+  async getDisabilityCategories(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.disability_categories;
+  }
+
+  async getDisabilityCauses(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.disability_causes;
+  }
+
+  async getServiceTypes(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.service_types;
+  }
+
+  // Склад - операции с инвентарем
+  async createInventoryItem(itemData: any): Promise<any> {
+    await this.delay(300);
+    const newItem = {
+      id: Math.max(...this.warehouse.inventory.map(i => i.id)) + 1,
+      ...itemData,
+      status: itemData.quantity > itemData.min_quantity ? 'in_stock' : 
+              itemData.quantity > 0 ? 'low_stock' : 'out_of_stock'
+    };
+    this.warehouse.inventory.push(newItem);
+    return newItem;
+  }
+
+  async updateInventoryItem(id: number, itemData: any): Promise<any> {
+    await this.delay(300);
+    const index = this.warehouse.inventory.findIndex(i => i.id === id);
+    if (index === -1) {
+      throw new Error('Позиция инвентаря не найдена');
+    }
+    
+    const updatedItem = {
+      ...this.warehouse.inventory[index],
+      ...itemData,
+      status: itemData.quantity > itemData.min_quantity ? 'in_stock' : 
+              itemData.quantity > 0 ? 'low_stock' : 'out_of_stock'
+    };
+    this.warehouse.inventory[index] = updatedItem;
+    return updatedItem;
+  }
+
+  async deleteInventoryItem(id: number): Promise<void> {
+    await this.delay(300);
+    const index = this.warehouse.inventory.findIndex(i => i.id === id);
+    if (index === -1) {
+      throw new Error('Позиция инвентаря не найдена');
+    }
+    this.warehouse.inventory.splice(index, 1);
+  }
+
+  async issueFromWarehouse(issueData: any): Promise<any> {
+    await this.delay(300);
+    const newIssue = {
+      id: Math.max(...this.warehouse.issues.map(i => i.id)) + 1,
+      ...issueData,
+      issued_at: new Date().toISOString()
+    };
+    this.warehouse.issues.push(newIssue);
+    
+    // Обновляем количество в инвентаре
+    const item = this.warehouse.inventory.find(i => i.id === issueData.inventory_item_id);
+    if (item) {
+      item.quantity = Math.max(0, item.quantity - issueData.quantity);
+      item.status = item.quantity > item.min_quantity ? 'in_stock' : 
+                   item.quantity > 0 ? 'low_stock' : 'out_of_stock';
+    }
+    
+    return newIssue;
+  }
+
+  async getWarehouseEntries(): Promise<any[]> {
+    await this.delay(100);
+    return this.warehouse.warehouse_entries;
+  }
+
+  async getWarehouseIssues(): Promise<any[]> {
+    await this.delay(100);
+    return this.warehouse.issues;
+  }
+
+  // Справочник инвалидности
+  async getDisabilities(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.disabilities;
   }
 }
 

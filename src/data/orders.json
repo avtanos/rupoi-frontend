@@ -2,23 +2,54 @@
   "orders": [
     {
       "id": 1,
+      "cart_id": 1,
       "number": "ORD-2025-0156",
+      "create_date": "2025-08-01",
+      "amputation_type": {
+        "id": 1,
+        "name": "Ампутация бедра",
+        "code": "HIP_AMPUTATION"
+      },
+      "diagnosis_type_id": 1,
+      "device_type_r_id": 1,
+      "device_type_l_id": null,
+      "quantity": 1,
+      "diagnosis_side": "right",
+      "hospitalized": false,
+      "order_type": "prosthesis",
+      "order_status": 2,
+      "order_payment_type": "Бесплатно",
+      "cost": 67500,
+      "is_urgent": false,
+      "urgent_reason": null,
+      
+      "call_date1": "2025-08-05",
+      "call_date2": "2025-08-10",
+      "call_date3": null,
+      "come_date1": "2025-08-06",
+      "come_date2": "2025-08-11",
+      "come_date3": null,
+      "accept_date": "2025-08-11",
+      "ready_date": "2025-09-10",
+      "issue_date": null,
+      "direct_to_approve_date": "2025-08-12",
+      
+      "shoe_model_id": null,
+      "shoe_color_id": null,
+      "heel_material_id": null,
+      "size_of_shortening": null,
+      "shoe_order_type": null,
+      
       "cart": {
         "id": 1,
         "first_name": "Иван",
         "last_name": "Иванов",
         "card_number": "2025-0001"
       },
-      "order_type": "prosthesis",
       "device_type": {
         "id": 1,
         "name": "Протез бедра",
         "code": "HIP_PROSTHESIS"
-      },
-      "amputation_type": {
-        "id": 1,
-        "name": "Ампутация бедра",
-        "code": "HIP_AMPUTATION"
       },
       "diagnosis_type": {
         "id": 1,
@@ -79,6 +110,29 @@
             "department": "Производство"
           },
           "assigned_at": "2025-08-01T11:00:00Z"
+        }
+      ],
+      "measurements": [
+        {
+          "id": 1,
+          "order_id": 1,
+          "type": "Длина культи",
+          "measurement": 25.5,
+          "side": "right"
+        },
+        {
+          "id": 2,
+          "order_id": 1,
+          "type": "Обхват культи",
+          "measurement": 35.0,
+          "side": "right"
+        },
+        {
+          "id": 3,
+          "order_id": 1,
+          "type": "Высота сидения",
+          "measurement": 45.0,
+          "side": "right"
         }
       ]
     },

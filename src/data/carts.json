@@ -2,17 +2,48 @@
   "carts": [
     {
       "id": 1,
+      "auto_number": 1,
       "card_number": "2025-0001",
-      "first_name": "Иван",
-      "last_name": "Иванов",
-      "middle_name": "Иванович",
-      "birth_date": "1980-03-12",
+      "create_date": "2025-01-15",
       "inn": "1230123456789",
-      "phone": "+996 555 123 456",
-      "address": "г. Бишкек, ул. Чуйская, 123",
-      "disability_group": 2,
-      "registration_date": "2025-01-15",
-      "status": "active",
+      "document_type": "Паспорт",
+      "first_name": "Иван",
+      "name": "Иванов",
+      "parent_name": "Иванович",
+      "sex": "male",
+      "birth_date": "1980-03-12",
+      "document_series": "ID",
+      "document_number": "1234567890",
+      "document_issue_date": "2010-05-15",
+      "document_issued_by": "ОВД г. Бишкек",
+      "lovz_type": "Общее заболевание",
+      "lovz_group": 2,
+      "note": "Пациент с сахарным диабетом",
+      
+      "registration_oblast_id": 1,
+      "registration_raion_id": 1,
+      "registration_locality_id": 1,
+      "living_oblast_id": 1,
+      "living_raion_id": 1,
+      "living_locality_id": 1,
+      "registration_address": "г. Бишкек, ул. Чуйская, 123",
+      "living_address": "г. Бишкек, ул. Чуйская, 123",
+      
+      "reference_msec": "REF-2025-001",
+      "pension_certificate_number": "PEN-123456",
+      "pension_certificate_issue_date": "2020-01-01",
+      "msec_id": 1,
+      "pension_certificate_indefinitely": false,
+      "pension_certificate_term_end_date": "2025-12-31",
+      
+      "work_place": "ООО 'Пример'",
+      "phone_number": "+996 555 123 456",
+      "additional_phone_number": "+996 312 123 456",
+      
+      "medical_department_direct_date": "2025-01-20",
+      "deregistration_date": null,
+      "deregistration_reason": null,
+      
       "oblast": {
         "id": 1,
         "name": "Чуйская область",
@@ -40,7 +71,78 @@
         "id": 1,
         "name": "Инвалидность по общему заболеванию",
         "code": "GENERAL"
-      }
+      },
+      "disabilities": [
+        {
+          "id": 1,
+          "cart_id": 1,
+          "group": 2,
+          "category": "Общее заболевание",
+          "reason": "Сахарный диабет",
+          "operated": false,
+          "note": "Диабетическая стопа"
+        }
+      ],
+      "prosthetics_data": {
+        "id": 1,
+        "cart_id": 1,
+        "length": 25.5,
+        "stump_form_id": 1,
+        "stump_mobility": "Ограниченная",
+        "stump_mobility_description": "Ограничение движений в коленном суставе",
+        "scar_type_id": 1,
+        "skin_condition_type_id": 1,
+        "bone_dust_type_id": 1,
+        "stump_support": "Хорошая",
+        "objectiv_data": "Культя в хорошем состоянии",
+        "stump_form": {
+          "id": 1,
+          "name": "Коническая",
+          "code": "CONICAL"
+        },
+        "scar_type": {
+          "id": 1,
+          "name": "Гладкий рубец",
+          "code": "SMOOTH"
+        },
+        "skin_condition_type": {
+          "id": 1,
+          "name": "Нормальная",
+          "code": "NORMAL"
+        },
+        "bone_dust_type": {
+          "id": 1,
+          "name": "Обычный",
+          "code": "NORMAL"
+        }
+      },
+      "tunduk_data": [
+        {
+          "id": 1,
+          "cart_id": 1,
+          "date": "2025-01-15",
+          "first_name": "Иван",
+          "name": "Иванов",
+          "parent_name": "Иванович",
+          "birth_date": "1980-03-12",
+          "passport_issue_date": "2010-05-15",
+          "passport_issued_by": "ОВД г. Бишкек",
+          "address_residence": "г. Бишкек, ул. Чуйская, 123",
+          "msec_organization_name": "МСЭ №1 г. Бишкек",
+          "msec_examination_date": "2020-01-01",
+          "msec_examination_type": "Первичное",
+          "msec_from": "2020-01-01",
+          "msec_to": "2025-12-31",
+          "msec_time_of_disability": "5 лет",
+          "msec_re_examination": true,
+          "msec_status_code": "ACTIVE",
+          "msec_in_absentia": false,
+          "msec_is_death_period": false,
+          "msec_wheelchair_goal": false,
+          "msec_has_ipr": true,
+          "msec_disability_group": 2
+        }
+      ]
     },
     {
       "id": 2,

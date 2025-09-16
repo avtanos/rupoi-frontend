@@ -1,9 +1,14 @@
 /** @type {import('next').NextConfig} */
+const isProduction = process.env.NODE_ENV === 'production'
+
 const nextConfig = {
-  output: 'export',
+  // Только для продакшена используем export и basePath
+  ...(isProduction && {
+    output: 'export',
+    basePath: '/rupoi-frontend',
+    assetPrefix: '/rupoi-frontend/',
+  }),
   trailingSlash: true,
-  basePath: '/rupoi-frontend',
-  assetPrefix: '/rupoi-frontend/',
   images: {
     unoptimized: true
   },
