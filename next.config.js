@@ -2,6 +2,8 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
+  basePath: '/rupoi-frontend',
+  assetPrefix: '/rupoi-frontend/',
   images: {
     unoptimized: true
   },
