@@ -5,6 +5,7 @@ export interface User {
   last_name: string;
   email: string;
   role: Role;
+  workshop_id?: number; // ID цеха для роли "Цеха"
   is_active: boolean;
   is_blocked: boolean;
   last_activity: string;
@@ -17,6 +18,18 @@ export interface Role {
   code: string;
   permissions: string[];
   is_active: boolean;
+}
+
+export interface Workshop {
+  id: number;
+  name: string;
+  code: string;
+  type: 'prosthesis' | 'shoes' | 'orthopedic' | 'repair' | 'ready_poi';
+  description?: string;
+  manager_id?: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Cart {
@@ -37,6 +50,9 @@ export interface Cart {
   document_issued_by: string;
   lovz_type: string;
   lovz_group: number;
+  disability_cause?: string; // Причина инвалидности
+  operation_info?: string; // Где и когда оперирован
+  additional_info?: string; // Дополнения
   note?: string;
   
   // Адресные данные
@@ -67,6 +83,9 @@ export interface Cart {
   medical_department_direct_date?: string;
   deregistration_date?: string;
   deregistration_reason?: string;
+  
+  // Направления на услуги
+  service_directions: ServiceDirection[];
   
   // Связанные данные
   oblast: Oblast;
@@ -124,7 +143,7 @@ export interface Order {
   quantity: number;
   diagnosis_side: 'left' | 'right' | 'both';
   hospitalized: boolean;
-  order_type: 'prosthesis' | 'shoes' | 'orthopedic' | 'repair';
+  order_type: 'prosthesis' | 'shoes' | 'orthopedic' | 'repair' | 'ready_poi';
   order_status: number;
   order_payment_type: string;
   cost: number;
@@ -166,6 +185,63 @@ export interface Order {
   works: OrderWork[];
   employees: EmployeeOrder[];
   measurements: OrderMeasurement[];
+  semi_finished_products: SemiFinishedProduct[]; // Полуфабрикаты для протезов
+  order_materials: OrderMaterial[]; // Материалы для Оттобок и ремонта
+  ready_poi?: ReadyPOI; // Готовые ПОИ
+  
+  // История статусов
+  status_history?: OrderStatusHistory[];
+  
+  // Медицинское одобрение
+  medical_approval?: MedicalApproval;
+  
+  // Производственные данные
+  production_data?: ProductionData;
+}
+
+export interface OrderStatus {
+  id: number;
+  code: string;
+  name: string;
+  description?: string;
+  color: string;
+  is_final: boolean;
+  can_transition_to: number[];
+}
+
+export interface OrderStatusHistory {
+  id: number;
+  order_id: number;
+  from_status: OrderStatus;
+  to_status: OrderStatus;
+  changed_by: User;
+  changed_at: string;
+  comment?: string;
+}
+
+export interface MedicalApproval {
+  id: number;
+  order_id: number;
+  approved_by: User;
+  approved_at: string;
+  status: 'pending' | 'approved' | 'rejected';
+  comment?: string;
+  required_measurements?: string[];
+  additional_requirements?: string[];
+}
+
+export interface ProductionData {
+  id: number;
+  order_id: number;
+  assigned_workshop: Workshop;
+  assigned_employees: EmployeeOrder[];
+  planned_start_date?: string;
+  planned_end_date?: string;
+  actual_start_date?: string;
+  actual_end_date?: string;
+  quality_check_passed: boolean;
+  quality_check_date?: string;
+  quality_check_by?: User;
 }
 
 export interface DeviceType {
@@ -333,6 +409,49 @@ export interface OrderMeasurement {
   side: 'left' | 'right' | 'both';
 }
 
+export interface SemiFinishedProduct {
+  id: number;
+  order_id: number;
+  name: string; // Наименование полуфабриката
+  code: string; // Шифр полуфабриката
+  size: string; // Размер
+  quantity_left: number; // Количество левый
+  quantity_right: number; // Количество правый
+  is_mold: boolean; // Слепок: Да/Нет
+}
+
+export interface OrderMaterial {
+  id: number;
+  order_id: number;
+  article_number: string; // № артикул
+  name: string; // Наименование материалов
+  unit: string; // Ед.изм
+  quantity: number; // Кол-во
+  amount: number; // Сумма
+  note?: string; // Примечание
+}
+
+export interface ServiceDirection {
+  id: number;
+  cart_id: number;
+  direction_date: string;
+  diagnosis: string;
+  institution: string;
+  doctor_name: string;
+  service_type: string;
+  created_at: string;
+}
+
+export interface RehabilitationDirection {
+  id: number;
+  cart_id: number;
+  direction_number: string; // ГОД/НОМЕР
+  direction_date: string;
+  diagnosis: string;
+  msec_certificate: string;
+  created_at: string;
+}
+
 export interface TundukData {
   id: number;
   cart_id: number;
@@ -482,4 +601,45 @@ export interface ServiceType {
   id: number;
   name: string;
   code: string;
+}
+
+export interface ReadyPOI {
+  id: number;
+  order_id: number;
+  wheelchair: boolean; // Кресло
+  wheelchair_type?: string; // Тип кресла
+  hearing_aid: boolean; // Слуховой аппарат
+  hearing_aid_type?: string; // Тип слухового аппарата
+  pgj: boolean; // ПГЖ
+  pgj_type?: string; // Тип ПГЖ
+  other: boolean; // И другие
+  other_description?: string; // Описание других изделий
+}
+
+// Справочники для распечатки бланков
+export interface PrintTemplate {
+  id: number;
+  name: string;
+  code: string;
+  category: 'prosthesis' | 'shoes' | 'orthopedic';
+  description: string;
+}
+
+export interface SemiFinishedProductTemplate {
+  id: number;
+  name: string;
+  code: string;
+  category: string;
+  description?: string;
+}
+
+export interface ShoeTemplate {
+  id: number;
+  name: string;
+  code: string;
+  description: string;
+  color?: string;
+  material?: string;
+  sole_type?: string;
+  fastening_type?: string;
 }

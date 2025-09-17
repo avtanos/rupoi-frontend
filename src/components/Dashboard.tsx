@@ -18,12 +18,14 @@ import {
 import { apiClient } from '@/lib/api';
 import { DashboardStats } from '@/types';
 import { Users, FileText, Clock, CheckCircle } from 'lucide-react';
+import ResponsiveTable, { ResponsiveTableHeader, ResponsiveTableBody, ResponsiveTableRow, ResponsiveTableCell, MobileCardView, useResponsive } from '@/components/ResponsiveTable';
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const { isMobile } = useResponsive();
 
   useEffect(() => {
     loadDashboardData();
@@ -190,60 +192,58 @@ export default function Dashboard() {
       {/* Recent Orders */}
       <div className="card p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Последние заказы</h3>
-        <div className="overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  № заказа
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Пациент
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Тип
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Статус
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Дата
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {stats?.recent_orders?.map((order) => (
-                <tr key={order.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {order.number}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {order.cart?.first_name || ''} {order.cart?.name || ''}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {order.order_type}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="badge badge-info">
-                      {order.status === 1 ? 'Новый' : 
-                       order.status === 2 ? 'В работе' :
-                       order.status === 3 ? 'Готов' : 'Выдан'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {order.created_at ? new Date(order.created_at).toLocaleDateString('ru-RU') : 'Не указано'}
-                  </td>
-                </tr>
-              )) || (
-                <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
-                    Нет данных
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <ResponsiveTable>
+          <ResponsiveTableHeader>
+            <ResponsiveTableRow>
+              <ResponsiveTableCell isHeader>
+                № заказа
+              </ResponsiveTableCell>
+              <ResponsiveTableCell isHeader>
+                Пациент
+              </ResponsiveTableCell>
+              <ResponsiveTableCell isHeader>
+                Тип
+              </ResponsiveTableCell>
+              <ResponsiveTableCell isHeader>
+                Статус
+              </ResponsiveTableCell>
+              <ResponsiveTableCell isHeader>
+                Дата
+              </ResponsiveTableCell>
+            </ResponsiveTableRow>
+          </ResponsiveTableHeader>
+          <ResponsiveTableBody>
+            {stats?.recent_orders?.map((order) => (
+              <ResponsiveTableRow key={order.id}>
+                <ResponsiveTableCell className="font-medium text-gray-900">
+                  {order.number}
+                </ResponsiveTableCell>
+                <ResponsiveTableCell className="text-gray-500">
+                  {order.cart?.first_name || ''} {order.cart?.name || ''}
+                </ResponsiveTableCell>
+                <ResponsiveTableCell className="text-gray-500">
+                  {order.order_type}
+                </ResponsiveTableCell>
+                <ResponsiveTableCell>
+                  <span className="badge badge-info">
+                    {order.status === 1 ? 'Новый' : 
+                     order.status === 2 ? 'В работе' :
+                     order.status === 3 ? 'Готов' : 'Выдан'}
+                  </span>
+                </ResponsiveTableCell>
+                <ResponsiveTableCell className="text-gray-500">
+                  {order.created_at ? new Date(order.created_at).toLocaleDateString('ru-RU') : 'Не указано'}
+                </ResponsiveTableCell>
+              </ResponsiveTableRow>
+            )) || (
+              <ResponsiveTableRow>
+                <ResponsiveTableCell colSpan={5} className="text-center text-gray-500">
+                  Нет данных
+                </ResponsiveTableCell>
+              </ResponsiveTableRow>
+            )}
+          </ResponsiveTableBody>
+        </ResponsiveTable>
       </div>
     </div>
   );

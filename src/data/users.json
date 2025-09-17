@@ -56,15 +56,15 @@
     },
     {
       "id": 4,
-      "username": "production1",
+      "username": "workshop1",
       "first_name": "Мастер",
       "last_name": "Ибрагимов",
-      "email": "production1@rupoi.kg",
+      "email": "workshop1@rupoi.kg",
       "role": {
         "id": 4,
         "name": "Производственный работник",
-        "code": "PRODUCTION",
-        "permissions": ["orders.production.read", "orders.production.update"],
+        "code": "WORKSHOP",
+        "permissions": ["orders.workshop.read", "orders.workshop.update", "orders.workshop.create", "overheads.create", "overheads.update"],
         "is_active": true
       },
       "is_active": true,

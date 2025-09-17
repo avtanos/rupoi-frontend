@@ -3,19 +3,26 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import OrderForm from '@/components/OrderForm';
+import ResponsiveTable, { ResponsiveTableHeader, ResponsiveTableBody, ResponsiveTableRow, ResponsiveTableCell, MobileCardView, useResponsive } from '@/components/ResponsiveTable';
 import { Order } from '@/types';
 import { apiClient } from '@/lib/api';
 import { Search, Plus, Eye, Edit, Package, Trash2, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import ReadyPOIForm from '@/components/ReadyPOIForm';
+import OrderStatusManager from '@/components/OrderStatusManager';
+import { useAuth } from '@/lib/auth-context';
 
 export default function OrdersPage() {
+  const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [showReadyPOIForm, setShowReadyPOIForm] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
+  const { isMobile } = useResponsive();
 
   useEffect(() => {
     loadOrders();
@@ -82,15 +89,18 @@ export default function OrdersPage() {
     }
   };
 
-  const handleStatusChange = async (orderId: number, newStatus: number) => {
+  const handleStatusChange = async (orderId: number, newStatus: any, comment?: string) => {
     try {
       const order = orders.find(o => o.id === orderId);
-      if (order) {
-        const updatedOrder = await apiClient.updateOrder(orderId, { ...order, status: newStatus });
-        setOrders(prev => prev.map(o => o.id === orderId ? updatedOrder : o));
-      }
+      if (!order) return;
+
+      const updatedOrder = await apiClient.updateOrderStatus(orderId, newStatus.id, {
+        comment,
+        changed_by: user?.id
+      });
+      setOrders(prev => prev.map(order => order.id === orderId ? updatedOrder : order));
     } catch (error) {
-      console.error('Failed to update status:', error);
+      console.error('Failed to update order status:', error);
     }
   };
 
@@ -250,6 +260,7 @@ export default function OrdersPage() {
                 <option value="shoes">Обувь</option>
                 <option value="orthopedic">Ортопедические</option>
                 <option value="repair">Ремонт</option>
+                <option value="ready_poi">Готовые ПОИ</option>
               </select>
             </div>
             <div>
@@ -318,81 +329,162 @@ export default function OrdersPage() {
 
         {/* Таблица заказов */}
         <div className="card p-6">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          {isMobile ? (
+            // Мобильное отображение в виде карточек
+            <MobileCardView
+              data={orders}
+              columns={[
+                {
+                  key: 'number',
+                  label: '№ заказа',
+                  render: (value: string) => (
+                    <span className="font-medium text-gray-900">{value}</span>
+                  )
+                },
+                {
+                  key: 'patient',
+                  label: 'Пациент',
+                  render: (value: any, item: Order) => (
+                    <div>
+                      <div className="font-medium">{item.cart?.first_name || ''} {item.cart?.name || ''}</div>
+                      <div className="text-gray-500 text-xs">№{item.cart?.card_number || 'Не указан'}</div>
+                    </div>
+                  )
+                },
+                {
+                  key: 'order_type',
+                  label: 'Тип',
+                  render: (value: string) => getTypeText(value)
+                },
+                {
+                  key: 'device_type',
+                  label: 'Изделие',
+                  render: (value: any, item: Order) => item.device_type?.name || 'Не указан'
+                },
+                {
+                  key: 'status',
+                  label: 'Статус',
+                  render: (value: number, item: Order) => (
+                    <div className="flex items-center space-x-2">
+                      <span className={getStatusBadge(item.status)}>
+                        {getStatusText(item.status)}
+                      </span>
+                      {item.is_urgent && (
+                        <AlertTriangle className="h-4 w-4 text-red-500" />
+                      )}
+                    </div>
+                  )
+                },
+                {
+                  key: 'created_at',
+                  label: 'Дата создания',
+                  render: (value: string) => value ? new Date(value).toLocaleDateString('ru-RU') : 'Не указано'
+                },
+                {
+                  key: 'actions',
+                  label: 'Действия',
+                  render: (value: any, item: Order) => (
+                    <div className="flex space-x-1">
+                      <button 
+                        onClick={() => handleEditOrder(item)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-100"
+                        title="Редактировать"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      {item.order_type === 'ready_poi' && (
+                        <button 
+                          onClick={() => setShowReadyPOIForm(item.id)}
+                          className="text-purple-600 hover:text-purple-900 p-1 rounded hover:bg-purple-100"
+                          title="Готовые ПОИ"
+                        >
+                          <Package className="h-4 w-4" />
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => handleStatusChange(item.id, item.status === 1 ? 2 : item.status + 1)}
+                        className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-100"
+                        title="Изменить статус"
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteOrder(item.id)}
+                        className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-100"
+                        title="Удалить"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )
+                }
+              ]}
+            />
+          ) : (
+            // Десктопное отображение в виде таблицы
+            <ResponsiveTable>
+              <ResponsiveTableHeader>
+                <ResponsiveTableRow>
+                  <ResponsiveTableCell isHeader>
                     <input
                       type="checkbox"
                       checked={selectedOrders.length === orders.length && orders.length > 0}
                       onChange={handleSelectAll}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    № заказа
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Пациент
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Тип
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Изделие
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Статус
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Дата создания
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Действия
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader>№ заказа</ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader>Пациент</ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader>Тип</ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader>Изделие</ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader>Статус</ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader>Дата создания</ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader>Действия</ResponsiveTableCell>
+                </ResponsiveTableRow>
+              </ResponsiveTableHeader>
+              <ResponsiveTableBody>
                 {loading ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center">
+                  <ResponsiveTableRow>
+                    <ResponsiveTableCell colSpan={8} className="text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                    </td>
-                  </tr>
+                    </ResponsiveTableCell>
+                  </ResponsiveTableRow>
                 ) : orders.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                  <ResponsiveTableRow>
+                    <ResponsiveTableCell colSpan={8} className="text-center text-gray-500">
                       Заказы не найдены
-                    </td>
-                  </tr>
+                    </ResponsiveTableCell>
+                  </ResponsiveTableRow>
                 ) : (
                   orders.map((order) => (
-                    <tr key={order.id} className={`hover:bg-gray-50 ${selectedOrders.includes(order.id) ? 'bg-blue-50' : ''}`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                    <ResponsiveTableRow 
+                      key={order.id} 
+                      className={`hover:bg-gray-50 ${selectedOrders.includes(order.id) ? 'bg-blue-50' : ''}`}
+                    >
+                      <ResponsiveTableCell>
                         <input
                           type="checkbox"
                           checked={selectedOrders.includes(order.id)}
                           onChange={() => handleSelectOrder(order.id)}
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="font-medium text-gray-900">
                         {order.number}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell>
                         <div>
                           <div className="font-medium">{order.cart?.first_name || ''} {order.cart?.name || ''}</div>
                           <div className="text-gray-500 text-xs">№{order.cart?.card_number || 'Не указан'}</div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {getTypeText(order.order_type)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {order.device_type?.name || 'Не указан'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell>
                         <div className="flex items-center space-x-2">
                           <span className={getStatusBadge(order.status)}>
                             {getStatusText(order.status)}
@@ -401,11 +493,11 @@ export default function OrdersPage() {
                             <AlertTriangle className="h-4 w-4 text-red-500" />
                           )}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {order.created_at ? new Date(order.created_at).toLocaleDateString('ru-RU') : 'Не указано'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell>
                         <div className="flex space-x-1">
                           <button 
                             onClick={() => handleEditOrder(order)}
@@ -414,6 +506,15 @@ export default function OrdersPage() {
                           >
                             <Edit className="h-4 w-4" />
                           </button>
+                          {order.order_type === 'ready_poi' && (
+                            <button 
+                              onClick={() => setShowReadyPOIForm(order.id)}
+                              className="text-purple-600 hover:text-purple-900 p-1 rounded hover:bg-purple-100"
+                              title="Готовые ПОИ"
+                            >
+                              <Package className="h-4 w-4" />
+                            </button>
+                          )}
                           <button 
                             onClick={() => handleStatusChange(order.id, order.status === 1 ? 2 : order.status + 1)}
                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-100"
@@ -429,13 +530,13 @@ export default function OrdersPage() {
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
+                      </ResponsiveTableCell>
+                    </ResponsiveTableRow>
                   ))
                 )}
-              </tbody>
-            </table>
-          </div>
+              </ResponsiveTableBody>
+            </ResponsiveTable>
+          )}
         </div>
       </div>
 
@@ -445,6 +546,15 @@ export default function OrdersPage() {
           order={editingOrder || undefined}
           onSave={handleSaveOrder}
           onCancel={handleCancelForm}
+        />
+      )}
+
+      {/* Модальное окно готовых ПОИ */}
+      {showReadyPOIForm && (
+        <ReadyPOIForm
+          orderId={showReadyPOIForm}
+          onSave={() => setShowReadyPOIForm(null)}
+          onCancel={() => setShowReadyPOIForm(null)}
         />
       )}
     </Layout>

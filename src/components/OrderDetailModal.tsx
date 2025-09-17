@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Order } from '@/types';
+import React, { useState, useEffect } from 'react';
+import { Order, SemiFinishedProduct } from '@/types';
+import { apiClient } from '@/lib/api';
+import SemiFinishedProductsBlock from './SemiFinishedProductsBlock';
 import { X, Stethoscope, FileText, Calendar, User, Package, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
 interface OrderDetailModalProps {
@@ -10,6 +12,27 @@ interface OrderDetailModalProps {
 }
 
 export default function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
+  const [semiFinishedProducts, setSemiFinishedProducts] = useState<SemiFinishedProduct[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+
+  useEffect(() => {
+    if (order.order_type === 'prosthesis') {
+      loadSemiFinishedProducts();
+    }
+  }, [order.id, order.order_type]);
+
+  const loadSemiFinishedProducts = async () => {
+    try {
+      setLoadingProducts(true);
+      const products = await apiClient.getSemiFinishedProducts(order.id);
+      setSemiFinishedProducts(products);
+    } catch (error) {
+      console.error('Failed to load semi-finished products:', error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
   const getStatusBadge = (status: number) => {
     const badges = {
       1: 'bg-blue-100 text-blue-800',
@@ -300,6 +323,17 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
             </div>
           </div>
         </div>
+
+        {/* Полуфабрикаты для заказов протезов */}
+        {order.order_type === 'prosthesis' && (
+          <div className="p-6 border-t border-gray-200">
+            <SemiFinishedProductsBlock
+              orderId={order.id}
+              products={semiFinishedProducts}
+              onUpdate={loadSemiFinishedProducts}
+            />
+          </div>
+        )}
 
         {/* Кнопки */}
         <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">

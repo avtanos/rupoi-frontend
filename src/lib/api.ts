@@ -93,8 +93,8 @@ class ApiClient {
     return dataService.getProductionOrders();
   }
 
-  async updateOrderStatus(id: number, status: number): Promise<Order> {
-    return dataService.updateOrderStatus(id, status);
+  async updateOrderStatus(id: number, status: number, data?: any): Promise<Order> {
+    return dataService.updateOrderStatus(id, status, data);
   }
 
   // Warehouse
@@ -272,6 +272,55 @@ class ApiClient {
   // Справочник инвалидности
   async getDisabilities(): Promise<any[]> {
     return dataService.getDisabilities();
+  }
+
+  // Направления на услуги
+  async getServiceDirections(cartId: number): Promise<any[]> {
+    return dataService.getServiceDirections(cartId);
+  }
+
+  async addServiceDirection(cartId: number, directionData: any): Promise<any> {
+    return dataService.addServiceDirection(cartId, directionData);
+  }
+
+  // Направления на реабилитацию
+  async getRehabilitationDirections(cartId: number): Promise<any[]> {
+    return dataService.getRehabilitationDirections(cartId);
+  }
+
+  async addRehabilitationDirection(cartId: number, directionData: any): Promise<any> {
+    return dataService.addRehabilitationDirection(cartId, directionData);
+  }
+
+  // Полуфабрикаты
+  async getSemiFinishedProducts(orderId: number): Promise<any[]> {
+    return dataService.getSemiFinishedProducts(orderId);
+  }
+
+  async addSemiFinishedProduct(orderId: number, productData: any): Promise<any> {
+    return dataService.addSemiFinishedProduct(orderId, productData);
+  }
+
+  // Готовые ПОИ
+  async getReadyPOI(orderId: number): Promise<any> {
+    return dataService.getReadyPOI(orderId);
+  }
+
+  async updateReadyPOI(orderId: number, poiData: any): Promise<any> {
+    return dataService.updateReadyPOI(orderId, poiData);
+  }
+
+  // Справочники для распечатки
+  async getPrintTemplates(category?: string): Promise<any[]> {
+    return dataService.getPrintTemplates(category);
+  }
+
+  async getSemiFinishedProductTemplates(): Promise<any[]> {
+    return dataService.getSemiFinishedProductTemplates();
+  }
+
+  async getShoeTemplates(): Promise<any[]> {
+    return dataService.getShoeTemplates();
   }
 }
 

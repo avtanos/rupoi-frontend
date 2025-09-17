@@ -74,47 +74,68 @@
   "inventory": [
     {
       "id": 1,
-      "article": "PROT-001",
-      "name": "Протез бедра титановый",
-      "category": "Протезы",
-      "quantity": 15,
-      "unit": "шт",
+      "article": "3543",
+      "inventory_number": "3543",
+      "code": "",
+      "name": "1287 ПОДОШОВА ЧЕРНАЯ 38",
+      "category": "Сырье и основные материалы",
+      "quantity": 45,
+      "unit": "ПАРА",
       "status": "in_stock",
-      "min_quantity": 5,
-      "price": 67500
+      "min_quantity": 10,
+      "price": 0
     },
     {
       "id": 2,
-      "article": "SHOE-001",
-      "name": "Ортопедическая обувь",
-      "category": "Обувь",
-      "quantity": 8,
-      "unit": "пара",
+      "article": "769",
+      "inventory_number": "769",
+      "code": "4R21",
+      "name": "АДАПТЕР ВИНТОВОЙ",
+      "category": "П/фабрикаты \"ОТТО БОКК\"",
+      "quantity": 12,
+      "unit": "ШТ",
       "status": "in_stock",
-      "min_quantity": 3,
-      "price": 16000
+      "min_quantity": 5,
+      "price": 0
     },
     {
       "id": 3,
-      "article": "ORTH-001",
-      "name": "Ортез колена",
-      "category": "Ортопедические изделия",
-      "quantity": 12,
-      "unit": "шт",
+      "article": "1592",
+      "inventory_number": "1592",
+      "code": "НЦ -598",
+      "name": "АЛЕКС ЛАК",
+      "category": "Прочие материалы",
+      "quantity": 8,
+      "unit": "КГ",
       "status": "in_stock",
-      "min_quantity": 4,
-      "price": 18000
+      "min_quantity": 3,
+      "price": 0
     },
     {
       "id": 4,
-      "article": "MAT-001",
-      "name": "Титан",
-      "category": "Материалы",
+      "article": "6",
+      "inventory_number": "6",
+      "code": "1 СОРТ",
+      "name": "ВОРОТОК",
+      "category": "Сырье и основные материалы",
       "quantity": 2,
-      "unit": "кг",
+      "unit": "дц",
       "status": "low_stock",
       "min_quantity": 5,
-      "price": 15000
+      "price": 0
+    },
+    {
+      "id": 5,
+      "article": "311",
+      "inventory_number": "311",
+      "code": "002",
+      "name": "БЛОЧКА",
+      "category": "Прочие материалы",
+      "quantity": 0,
+      "unit": "ШТ",
+      "status": "out_of_stock",
+      "min_quantity": 10,
+      "price": 0
     }
   ]
 }

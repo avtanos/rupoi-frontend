@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import Layout from '@/components/Layout';
+import ResponsiveTable, { ResponsiveTableHeader, ResponsiveTableBody, ResponsiveTableRow, ResponsiveTableCell, MobileCardView, useResponsive } from '@/components/ResponsiveTable';
 import OverheadForm from '@/components/OverheadForm';
 import OverheadDetailModal from '@/components/OverheadDetailModal';
 import { Overhead } from '@/types';
@@ -15,26 +16,46 @@ export default function OverheadsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingOverhead, setEditingOverhead] = useState<Overhead | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [detailOverhead, setDetailOverhead] = useState<Overhead | null>(null);
   const [selectedOverheads, setSelectedOverheads] = useState<number[]>([]);
+  const { isMobile } = useResponsive();
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
       loadOverheads();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, searchTerm, statusFilter, typeFilter]);
 
   const loadOverheads = async () => {
     try {
       setLoading(true);
       const response = await apiClient.getOverheads();
-      console.log('Загружены накладные:', response.results.length, 'записей');
-      console.log('ID накладных:', response.results.map(o => o.id));
-      setOverheads(response.results);
+      let filteredOverheads = response.results || [];
+      
+      // Фильтрация по поисковому запросу
+      if (searchTerm) {
+        filteredOverheads = filteredOverheads.filter(overhead => 
+          overhead.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          overhead.shop_name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      // Фильтрация по статусу
+      if (statusFilter !== 'all') {
+        filteredOverheads = filteredOverheads.filter(overhead => overhead.status === statusFilter);
+      }
+      
+      // Фильтрация по типу
+      if (typeFilter) {
+        filteredOverheads = filteredOverheads.filter(overhead => overhead.type === typeFilter);
+      }
+      
+      setOverheads(filteredOverheads);
     } catch (error) {
       console.error('Ошибка загрузки накладных:', error);
     } finally {
@@ -320,6 +341,20 @@ export default function OverheadsPage() {
                 </select>
               </div>
               <div>
+                <select
+                  className="input"
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                >
+                  <option value="">Все типы</option>
+                  <option value="prosthesis">Протезы</option>
+                  <option value="shoes">Обувь</option>
+                  <option value="orthopedic">Оттобок</option>
+                  <option value="repair">Ремонт</option>
+                  <option value="ready_poi">Готовые ПОИ</option>
+                </select>
+              </div>
+              <div>
                 <button
                   onClick={loadOverheads}
                   className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -361,86 +396,93 @@ export default function OverheadsPage() {
 
         {/* Таблица накладных */}
         <div className="card p-6">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          {isMobile ? (
+            // Мобильное отображение в виде карточек
+            <MobileCardView
+              data={data}
+              columns={columns}
+            />
+          ) : (
+            // Десктопное отображение в виде таблицы
+            <ResponsiveTable>
+              <ResponsiveTableHeader>
+                <ResponsiveTableRow>
+                  <ResponsiveTableCell isHeader >
                     <input
                       type="checkbox"
                       checked={selectedOverheads.length === filteredOverheads.length && filteredOverheads.length > 0}
                       onChange={handleSelectAll}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Номер
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Дата
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Цех
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Количество
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Статус
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Тип
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Действия
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+                  </ResponsiveTableCell>
+                </ResponsiveTableRow>
+              </ResponsiveTableHeader>
+              <ResponsiveTableBody>
                 {loading ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center">
+                  <ResponsiveTableRow>
+                    <ResponsiveTableCell colSpan={8} className="px-6 py-4 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                    </td>
-                  </tr>
+                    </ResponsiveTableCell>
+                  </ResponsiveTableRow>
                 ) : filteredOverheads.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                  <ResponsiveTableRow>
+                    <ResponsiveTableCell colSpan={8} className="px-6 py-4 text-center text-gray-500">
                       Накладные не найдены
-                    </td>
-                  </tr>
+                    </ResponsiveTableCell>
+                  </ResponsiveTableRow>
                 ) : (
                   filteredOverheads.map((overhead, index) => (
-                    <tr key={`${overhead.id}-${index}`} className={`hover:bg-gray-50 ${selectedOverheads.includes(overhead.id) ? 'bg-blue-50' : ''}`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                    <ResponsiveTableRow key={`${overhead.id}-${index}`} className={`hover:bg-gray-50 ${selectedOverheads.includes(overhead.id) ? 'bg-blue-50' : ''}`}>
+                      <ResponsiveTableCell >
                         <input
                           type="checkbox"
                           checked={selectedOverheads.includes(overhead.id)}
                           onChange={() => handleSelectOverhead(overhead.id)}
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="font-medium text-gray-900">
                         {overhead.number}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {overhead.date ? new Date(overhead.date).toLocaleDateString('ru-RU') : 'Не указано'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {overhead.shop_name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         <div className="flex items-center">
                           <span className="font-semibold">{overhead.device_count}</span>
                           <span className="text-gray-400 ml-1">изд.</span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell >
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(overhead.status)}`}>
                           {getStatusText(overhead.status)}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           overhead.type === 'Выдача' ? 'bg-blue-100 text-blue-800' :
                           overhead.type === 'Возврат' ? 'bg-orange-100 text-orange-800' :
@@ -449,8 +491,8 @@ export default function OverheadsPage() {
                         }`}>
                           {overhead.type}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell >
                         <div className="flex space-x-1">
                           <button 
                             onClick={() => handleViewDetails(overhead)}
@@ -492,13 +534,13 @@ export default function OverheadsPage() {
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
+                      </ResponsiveTableCell>
+                    </ResponsiveTableRow>
                   ))
                 )}
-              </tbody>
-            </table>
-          </div>
+              </ResponsiveTableBody>
+            </ResponsiveTable>
+          )}
         </div>
       </div>
 

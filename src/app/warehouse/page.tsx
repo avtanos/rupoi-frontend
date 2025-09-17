@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
+import ResponsiveTable, { ResponsiveTableHeader, ResponsiveTableBody, ResponsiveTableRow, ResponsiveTableCell, MobileCardView, useResponsive } from '@/components/ResponsiveTable';
 import { apiClient } from '@/lib/api';
 import InventoryDetailModal from '@/components/InventoryDetailModal';
 import InventoryEditModal from '@/components/InventoryEditModal';
@@ -18,6 +19,8 @@ interface InventoryItem {
   status: string;
   min_quantity: number;
   price: number;
+  code?: string;
+  inventory_number?: string;
 }
 
 export default function WarehousePage() {
@@ -32,6 +35,7 @@ export default function WarehousePage() {
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const { isMobile } = useResponsive();
 
   useEffect(() => {
     loadInventory();
@@ -122,9 +126,11 @@ export default function WarehousePage() {
 
   // Фильтрация инвентаря
   const filteredInventory = inventory.filter(item => {
-    const matchesSearch = item.article.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (item.article?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+                         (item.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+                         (item.category?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+                         (item.code?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+                         (item.inventory_number?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
     const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
     const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
     return matchesSearch && matchesStatus && matchesCategory;
@@ -264,7 +270,7 @@ export default function WarehousePage() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Поиск по артикулу, названию..."
+                    placeholder="Поиск по инв. номеру, коду, названию..."
                   />
                 </div>
               </div>
@@ -330,98 +336,111 @@ export default function WarehousePage() {
 
         {/* Таблица инвентаря */}
         <div className="card p-6">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          {isMobile ? (
+            // Мобильное отображение в виде карточек
+            <MobileCardView
+              data={data}
+              columns={columns}
+            />
+          ) : (
+            // Десктопное отображение в виде таблицы
+            <ResponsiveTable>
+              <ResponsiveTableHeader>
+                <ResponsiveTableRow>
+                  <ResponsiveTableCell isHeader >
                     <input
                       type="checkbox"
                       checked={selectedItems.length === filteredInventory.length && filteredInventory.length > 0}
                       onChange={handleSelectAll}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Артикул
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
+                    Инв. номер
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
+                    Код
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Наименование
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Категория
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Количество
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Мин. запас
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Статус
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Цена
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Действия
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+                  </ResponsiveTableCell>
+                </ResponsiveTableRow>
+              </ResponsiveTableHeader>
+              <ResponsiveTableBody>
                 {loading ? (
-                  <tr>
-                    <td colSpan={9} className="px-6 py-4 text-center">
+                  <ResponsiveTableRow>
+                    <ResponsiveTableCell colSpan={10} className="px-6 py-4 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                    </td>
-                  </tr>
+                    </ResponsiveTableCell>
+                  </ResponsiveTableRow>
                 ) : filteredInventory.length === 0 ? (
-                  <tr>
-                    <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                  <ResponsiveTableRow>
+                    <ResponsiveTableCell colSpan={10} className="px-6 py-4 text-center text-gray-500">
                       {inventory.length === 0 ? 'Инвентарь не найден' : 'Нет позиций, соответствующих фильтрам'}
-                    </td>
-                  </tr>
+                    </ResponsiveTableCell>
+                  </ResponsiveTableRow>
                 ) : (
                   filteredInventory.map((item) => (
-                    <tr key={item.id} className={`hover:bg-gray-50 ${selectedItems.includes(item.id) ? 'bg-blue-50' : ''}`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                    <ResponsiveTableRow key={item.id} className={`hover:bg-gray-50 ${selectedItems.includes(item.id) ? 'bg-blue-50' : ''}`}>
+                      <ResponsiveTableCell >
                         <input
                           type="checkbox"
                           checked={selectedItems.includes(item.id)}
                           onChange={() => handleSelectItem(item.id)}
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {item.article}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="font-medium text-gray-900">
+                        {item.inventory_number || item.article}
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
+                        {item.code || '-'}
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell >
                         {item.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {item.category}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         <div className="flex items-center">
                           <span className="font-medium">{item.quantity}</span>
                           <span className="ml-1 text-gray-400">{item.unit}</span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {item.min_quantity} {item.unit}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell >
                         <div className="flex items-center">
                           {getStatusIcon(item.status)}
                           <span className={`ml-2 ${getStatusBadge(item.status)}`}>
                             {getStatusText(item.status)}
                           </span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {item.price.toLocaleString('ru-RU')} сом
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell >
                         <div className="flex space-x-1">
                           <button
                             onClick={() => handleViewDetails(item)}
@@ -454,13 +473,13 @@ export default function WarehousePage() {
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
+                      </ResponsiveTableCell>
+                    </ResponsiveTableRow>
                   ))
                 )}
-              </tbody>
-            </table>
-          </div>
+              </ResponsiveTableBody>
+            </ResponsiveTable>
+          )}
         </div>
 
         {/* Модальные окна */}

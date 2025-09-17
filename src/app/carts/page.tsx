@@ -2,10 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
+import ResponsiveTable, { ResponsiveTableHeader, ResponsiveTableBody, ResponsiveTableRow, ResponsiveTableCell, MobileCardView, useResponsive } from '@/components/ResponsiveTable';
 import CartForm from '@/components/CartForm';
-import { Cart } from '@/types';
+import ServiceDirectionsBlock from '@/components/ServiceDirectionsBlock';
+import RehabilitationDirectionModal from '@/components/RehabilitationDirectionModal';
+import { Cart, ServiceDirection, RehabilitationDirection } from '@/types';
 import { apiClient } from '@/lib/api';
-import { Search, Plus, Eye, Edit, Archive, X } from 'lucide-react';
+import { Search, Plus, Eye, Edit, Archive, X, FileText, Stethoscope } from 'lucide-react';
 
 export default function CartsPage() {
   const [carts, setCarts] = useState<Cart[]>([]);
@@ -14,6 +17,11 @@ export default function CartsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingCart, setEditingCart] = useState<Cart | null>(null);
+  const [showServiceDirections, setShowServiceDirections] = useState<number | null>(null);
+  const [showRehabilitationDirection, setShowRehabilitationDirection] = useState<number | null>(null);
+  const [serviceDirections, setServiceDirections] = useState<ServiceDirection[]>([]);
+  const [rehabilitationDirections, setRehabilitationDirections] = useState<RehabilitationDirection[]>([]);
+  const { isMobile } = useResponsive();
 
   useEffect(() => {
     loadCarts();
@@ -81,6 +89,39 @@ export default function CartsPage() {
   const handleCancelForm = () => {
     setShowForm(false);
     setEditingCart(null);
+  };
+
+  const loadServiceDirections = async (cartId: number) => {
+    try {
+      const directions = await apiClient.getServiceDirections(cartId);
+      setServiceDirections(directions);
+    } catch (error) {
+      console.error('Failed to load service directions:', error);
+    }
+  };
+
+  const loadRehabilitationDirections = async (cartId: number) => {
+    try {
+      const directions = await apiClient.getRehabilitationDirections(cartId);
+      setRehabilitationDirections(directions);
+    } catch (error) {
+      console.error('Failed to load rehabilitation directions:', error);
+    }
+  };
+
+  const handleShowServiceDirections = (cartId: number) => {
+    setShowServiceDirections(cartId);
+    loadServiceDirections(cartId);
+  };
+
+  const handleShowRehabilitationDirection = (cartId: number) => {
+    setShowRehabilitationDirection(cartId);
+    loadRehabilitationDirections(cartId);
+  };
+
+  const handleRehabilitationDirectionSave = (direction: RehabilitationDirection) => {
+    setRehabilitationDirections(prev => [...prev, direction]);
+    setShowRehabilitationDirection(null);
   };
 
   return (
@@ -188,76 +229,83 @@ export default function CartsPage() {
 
         {/* Таблица пациентов */}
         <div className="card p-6">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          {isMobile ? (
+            // Мобильное отображение в виде карточек
+            <MobileCardView
+              data={data}
+              columns={columns}
+            />
+          ) : (
+            // Десктопное отображение в виде таблицы
+            <ResponsiveTable>
+              <ResponsiveTableHeader>
+                <ResponsiveTableRow>
+                  <ResponsiveTableCell isHeader >
                     № карточки
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     ФИО
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Дата рождения
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     ПИН
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Группа
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Телефон
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Статус
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </ResponsiveTableCell>
+                  <ResponsiveTableCell isHeader >
                     Действия
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+                  </ResponsiveTableCell>
+                </ResponsiveTableRow>
+              </ResponsiveTableHeader>
+              <ResponsiveTableBody>
                 {loading ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center">
+                  <ResponsiveTableRow>
+                    <ResponsiveTableCell colSpan={8} className="px-6 py-4 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                    </td>
-                  </tr>
+                    </ResponsiveTableCell>
+                  </ResponsiveTableRow>
                 ) : carts.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                  <ResponsiveTableRow>
+                    <ResponsiveTableCell colSpan={8} className="px-6 py-4 text-center text-gray-500">
                       Пациенты не найдены
-                    </td>
-                  </tr>
+                    </ResponsiveTableCell>
+                  </ResponsiveTableRow>
                 ) : (
                   carts.map((cart) => (
-                    <tr key={cart.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <ResponsiveTableRow key={cart.id} className="hover:bg-gray-50">
+                      <ResponsiveTableCell className="font-medium text-gray-900">
                         {cart.card_number}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell >
                         {cart.name} {cart.first_name} {cart.parent_name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {cart.birth_date ? new Date(cart.birth_date).toLocaleDateString('ru-RU') : 'Не указано'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {cart.inn}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {cart.lovz_group} группа
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell className="text-gray-500">
                         {cart.phone_number}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell >
                         <span className={getStatusBadge(cart.status)}>
                           {getStatusText(cart.status)}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      </ResponsiveTableCell>
+                      <ResponsiveTableCell >
                         <div className="flex space-x-2">
                           <button 
                             onClick={() => handleEditCart(cart)}
@@ -274,19 +322,33 @@ export default function CartsPage() {
                             <Edit className="h-4 w-4" />
                           </button>
                           <button 
+                            onClick={() => handleShowServiceDirections(cart.id)}
+                            className="text-green-600 hover:text-green-900"
+                            title="Направления на услуги"
+                          >
+                            <Stethoscope className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleShowRehabilitationDirection(cart.id)}
+                            className="text-purple-600 hover:text-purple-900"
+                            title="Направление на реабилитацию"
+                          >
+                            <FileText className="h-4 w-4" />
+                          </button>
+                          <button 
                             className="text-gray-600 hover:text-gray-900"
                             title="Архивировать"
                           >
                             <Archive className="h-4 w-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
+                      </ResponsiveTableCell>
+                    </ResponsiveTableRow>
                   ))
                 )}
-              </tbody>
-            </table>
-          </div>
+              </ResponsiveTableBody>
+            </ResponsiveTable>
+          )}
         </div>
 
         {/* Модальное окно формы */}
@@ -317,6 +379,39 @@ export default function CartsPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Модальное окно направлений на услуги */}
+        {showServiceDirections && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900">Направления на услуги</h3>
+                <button
+                  onClick={() => setShowServiceDirections(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              <div className="p-6">
+                <ServiceDirectionsBlock
+                  cartId={showServiceDirections}
+                  directions={serviceDirections}
+                  onUpdate={() => loadServiceDirections(showServiceDirections)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Модальное окно направления на реабилитацию */}
+        {showRehabilitationDirection && (
+          <RehabilitationDirectionModal
+            cartId={showRehabilitationDirection}
+            onClose={() => setShowRehabilitationDirection(null)}
+            onSave={handleRehabilitationDirectionSave}
+          />
         )}
       </div>
     </Layout>

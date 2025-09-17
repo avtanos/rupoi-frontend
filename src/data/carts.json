@@ -18,6 +18,9 @@
       "document_issued_by": "ОВД г. Бишкек",
       "lovz_type": "Общее заболевание",
       "lovz_group": 2,
+      "disability_cause": "Заболевание",
+      "operation_info": "Операция в 2018 году в городской больнице №1",
+      "additional_info": "Пациент требует особого внимания при изготовлении протеза",
       "status": "active",
       "note": "Пациент с сахарным диабетом",
       
@@ -117,6 +120,18 @@
           "code": "NORMAL"
         }
       },
+      "service_directions": [
+        {
+          "id": 1,
+          "cart_id": 1,
+          "direction_date": "2025-01-15",
+          "diagnosis": "Сахарный диабет с диабетической стопой",
+          "institution": "Городская больница №1",
+          "doctor_name": "Иванов И.И.",
+          "service_type": "Протезирование нижней конечности",
+          "created_at": "2025-01-15T10:00:00Z"
+        }
+      ],
       "tunduk_data": [
         {
           "id": 1,

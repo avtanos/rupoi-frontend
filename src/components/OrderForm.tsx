@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Order, Cart, DeviceType, DiagnosisType, ShoeModel, ShoeColor, HeelMaterial, OrderMeasurement } from '@/types';
+import { Order, Cart, DeviceType, DiagnosisType, ShoeModel, ShoeColor, HeelMaterial, OrderMeasurement, Material, OrderMaterial } from '@/types';
 import { apiClient } from '@/lib/api';
 import { X, Calendar, User, Package, AlertCircle } from 'lucide-react';
 
@@ -19,6 +19,7 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
   const [shoeModels, setShoeModels] = useState<ShoeModel[]>([]);
   const [shoeColors, setShoeColors] = useState<ShoeColor[]>([]);
   const [heelMaterials, setHeelMaterials] = useState<HeelMaterial[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState('general'); // 'general', 'measurements', 'process'
@@ -27,13 +28,14 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
     const loadDictionaries = async () => {
       try {
         setLoading(true);
-        const [cartsData, deviceTypesData, diagnosisTypesData, shoeModelsData, shoeColorsData, heelMaterialsData] = await Promise.all([
+        const [cartsData, deviceTypesData, diagnosisTypesData, shoeModelsData, shoeColorsData, heelMaterialsData, materialsData] = await Promise.all([
           apiClient.getCarts(),
           apiClient.getDeviceTypes(),
           apiClient.getDiagnosisTypes(),
           apiClient.getShoeModels(),
           apiClient.getShoeColors(),
-          apiClient.getHeelMaterials()
+          apiClient.getHeelMaterials(),
+          apiClient.getMaterials()
         ]);
         
         setCarts(cartsData.results);
@@ -42,6 +44,7 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
         setShoeModels(shoeModelsData);
         setShoeColors(shoeColorsData);
         setHeelMaterials(heelMaterialsData);
+        setMaterials(materialsData);
       } catch (error) {
         console.error('Failed to load dictionaries:', error);
       } finally {
@@ -808,6 +811,93 @@ export default function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
                       </div>
                     </>
                   )}
+                </div>
+                
+                {/* Материалы заказа */}
+                <div className="mt-8">
+                  <h4 className="text-lg font-medium text-gray-900 mb-4">Материалы заказа</h4>
+                  <div className="space-y-4">
+                    {(formData.order_materials || []).map((orderMaterial: OrderMaterial, index: number) => (
+                      <div key={index} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                        <div className="flex-1">
+                          <select
+                            value={orderMaterial.material?.id || ''}
+                            onChange={(e) => {
+                              const materialId = parseInt(e.target.value);
+                              const material = materials.find(m => m.id === materialId);
+                              if (material) {
+                                const updatedMaterials = [...(formData.order_materials || [])];
+                                updatedMaterials[index] = {
+                                  ...updatedMaterials[index],
+                                  material: material
+                                };
+                                setFormData(prev => ({ ...prev, order_materials: updatedMaterials }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">Выберите материал</option>
+                            {materials.map(material => (
+                              <option key={material.id} value={material.id}>
+                                {material.name} ({material.code || material.inventory_number}) - {material.unit}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="w-24">
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.1"
+                            placeholder="Кол-во"
+                            value={orderMaterial.quantity || ''}
+                            onChange={(e) => {
+                              const updatedMaterials = [...(formData.order_materials || [])];
+                              updatedMaterials[index] = {
+                                ...updatedMaterials[index],
+                                quantity: parseFloat(e.target.value) || 0
+                              };
+                              setFormData(prev => ({ ...prev, order_materials: updatedMaterials }));
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updatedMaterials = (formData.order_materials || []).filter((_, i) => i !== index);
+                            setFormData(prev => ({ ...prev, order_materials: updatedMaterials }));
+                          }}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newMaterial: OrderMaterial = {
+                          id: Date.now(),
+                          order_id: formData.id || 0,
+                          material: materials[0] || {} as Material,
+                          quantity: 1,
+                          article_number: '',
+                          consumption_norm: 0,
+                          price: 0,
+                          total_cost: 0
+                        };
+                        setFormData(prev => ({
+                          ...prev,
+                          order_materials: [...(prev.order_materials || []), newMaterial]
+                        }));
+                      }}
+                      className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100"
+                    >
+                      <Package className="h-4 w-4" />
+                      <span>Добавить материал</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

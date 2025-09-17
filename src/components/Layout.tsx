@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { useRoleCheck } from '@/components/RoleGuard';
 import { 
   Home, 
   Users, 
@@ -15,7 +17,13 @@ import {
   Menu,
   X,
   ClipboardList,
-  RefreshCw
+  RefreshCw,
+  Archive,
+  UserCheck,
+  Stethoscope as MedicalIcon,
+  Database,
+  Shield,
+  ChevronDown
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -23,20 +31,230 @@ interface LayoutProps {
 }
 
 const navigation = [
-  { name: 'Главная', href: '/', icon: Home },
-  { name: 'Картотека', href: '/carts', icon: Users },
-  { name: 'Заказы', href: '/orders', icon: FileText },
-  { name: 'Медицинский отдел', href: '/medical', icon: Stethoscope },
-  { name: 'Накладные', href: '/overheads', icon: ClipboardList },
-  { name: 'Склад', href: '/warehouse', icon: Package },
-  { name: 'Отчеты', href: '/reports', icon: BarChart3 },
-  { name: 'Интеграция', href: '/integration', icon: RefreshCw },
-  { name: 'Настройки', href: '/settings', icon: Settings },
+  { 
+    name: 'Главная', 
+    href: '/', 
+    icon: Home, 
+    roles: ['ADMIN', 'REGISTRAR', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE', 'REPORTS'] 
+  },
+  { 
+    name: 'Картотека', 
+    href: '/carts', 
+    icon: Users, 
+    roles: ['ADMIN', 'REGISTRAR', 'MEDICAL'] 
+  },
+  { 
+    name: 'Заказы', 
+    href: '/orders', 
+    icon: FileText, 
+    roles: ['ADMIN', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE'] 
+  },
+  { 
+    name: 'Медицинский отдел', 
+    href: '/medical', 
+    icon: Stethoscope, 
+    roles: ['ADMIN', 'MEDICAL'] 
+  },
+  { 
+    name: 'Медицинские направления', 
+    href: '/medicalDepartment/list', 
+    icon: MedicalIcon, 
+    roles: ['ADMIN', 'MEDICAL'] 
+  },
+  { 
+    name: 'Архив пациентов', 
+    href: '/archive/list', 
+    icon: Archive, 
+    roles: ['ADMIN', 'REGISTRAR'] 
+  },
+  { 
+    name: 'Накладные', 
+    href: '/overheads', 
+    icon: ClipboardList, 
+    roles: ['ADMIN', 'WORKSHOP', 'WAREHOUSE'] 
+  },
+  { 
+    name: 'Склад', 
+    href: '/warehouse', 
+    icon: Package, 
+    roles: ['ADMIN', 'WAREHOUSE'] 
+  },
+  { 
+    name: 'Отчеты', 
+    href: '/reports', 
+    icon: BarChart3, 
+    roles: ['ADMIN', 'REPORTS', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE'] 
+  },
+  { 
+    name: 'Настройки', 
+    icon: Settings, 
+    roles: ['ADMIN'],
+    submenu: [
+      { 
+        name: 'Общие настройки', 
+        href: '/settings', 
+        icon: Settings, 
+        roles: ['ADMIN'] 
+      },
+      { 
+        name: 'Сотрудники', 
+        href: '/employees', 
+        icon: UserCheck, 
+        roles: ['ADMIN'] 
+      },
+      { 
+        name: 'Интеграция', 
+        href: '/integration', 
+        icon: RefreshCw, 
+        roles: ['ADMIN'] 
+      }
+    ]
+  },
+  { 
+    name: 'Демонстрации', 
+    icon: Database, 
+    roles: ['ADMIN', 'REGISTRAR', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE', 'REPORTS'],
+    submenu: [
+      { 
+        name: 'Жизненный цикл', 
+        href: '/lifecycle-demo', 
+        icon: Database, 
+        roles: ['ADMIN', 'REGISTRAR', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE', 'REPORTS'] 
+      },
+      { 
+        name: 'Услуги/заказы', 
+        href: '/service-order-demo', 
+        icon: Package, 
+        roles: ['ADMIN', 'REGISTRAR', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE', 'REPORTS'] 
+      },
+      { 
+        name: 'Накладные', 
+        href: '/overhead-demo', 
+        icon: FileText, 
+        roles: ['ADMIN', 'REGISTRAR', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE', 'REPORTS'] 
+      },
+      { 
+        name: 'Мед. утверждение', 
+        href: '/medical-approval-demo', 
+        icon: UserCheck, 
+        roles: ['ADMIN', 'MEDICAL'] 
+      },
+      { 
+        name: 'Привязки UI', 
+        href: '/ui-binding-demo', 
+        icon: Settings, 
+        roles: ['ADMIN', 'REGISTRAR', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE', 'REPORTS'] 
+      },
+      { 
+        name: 'Правила валидации', 
+        href: '/validation-rules-demo', 
+        icon: Shield, 
+        roles: ['ADMIN', 'REGISTRAR', 'MEDICAL', 'WORKSHOP', 'WAREHOUSE', 'REPORTS'] 
+      }
+    ]
+  },
 ];
 
 export default function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuth();
+  const { hasRole } = useRoleCheck();
+  const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
+
+  const toggleMenu = (menuName: string) => {
+    setExpandedMenus(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(menuName)) {
+        newSet.delete(menuName);
+      } else {
+        newSet.add(menuName);
+      }
+      return newSet;
+    });
+  };
+
+  const isActive = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(href);
+  };
+
+  const isSubmenuActive = (submenu: any[]) => {
+    return submenu.some(item => isActive(item.href));
+  };
+
+  const renderNavigationItem = (item: any) => {
+    const Icon = item.icon;
+    const isExpanded = expandedMenus.has(item.name);
+    const isItemActive = isActive(item.href);
+    const isSubmenuItemActive = item.submenu ? isSubmenuActive(item.submenu) : false;
+    
+    if (item.submenu) {
+      return (
+        <div key={item.name}>
+          <button
+            onClick={() => toggleMenu(item.name)}
+            className={`group flex items-center justify-between w-full px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+              isSubmenuItemActive
+                ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            }`}
+          >
+            <div className="flex items-center">
+              <Icon className={`mr-3 h-5 w-5 ${isSubmenuItemActive ? 'text-blue-700' : ''}`} />
+              {item.name}
+            </div>
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''} ${
+                isSubmenuItemActive ? 'text-blue-700' : ''
+              }`}
+            />
+          </button>
+          {isExpanded && (
+            <div className="ml-4 space-y-1">
+              {item.submenu
+                .filter((subItem: any) => hasRole(subItem.roles))
+                .map((subItem: any) => {
+                  const SubIcon = subItem.icon;
+                  const isSubItemActive = isActive(subItem.href);
+                  return (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+                        isSubItemActive
+                          ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                          : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                      }`}
+                    >
+                      <SubIcon className={`mr-3 h-4 w-4 ${isSubItemActive ? 'text-blue-700' : ''}`} />
+                      {subItem.name}
+                    </Link>
+                  );
+                })}
+            </div>
+          )}
+        </div>
+      );
+    }
+    
+    return (
+      <Link
+        key={item.name}
+        href={item.href}
+        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+          isItemActive
+            ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+        }`}
+      >
+        <Icon className={`mr-3 h-5 w-5 ${isItemActive ? 'text-blue-700' : ''}`} />
+        {item.name}
+      </Link>
+    );
+  };
 
   const handleLogout = async () => {
     try {
@@ -62,19 +280,9 @@ export default function Layout({ children }: LayoutProps) {
             </button>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="group flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900"
-                >
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.name}
-                </Link>
-              );
-            })}
+            {navigation
+              .filter(item => hasRole(item.roles))
+              .map(renderNavigationItem)}
           </nav>
         </div>
       </div>
@@ -86,19 +294,9 @@ export default function Layout({ children }: LayoutProps) {
             <h1 className="text-xl font-bold text-gray-900">РУПИО</h1>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="group flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900"
-                >
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.name}
-                </Link>
-              );
-            })}
+            {navigation
+              .filter(item => hasRole(item.roles))
+              .map(renderNavigationItem)}
           </nav>
         </div>
       </div>

@@ -7,7 +7,7 @@
       "shop_name": "Цех протезирования",
       "device_count": 3,
       "status": "confirmed",
-      "type": "Готовая продукция",
+      "type": "prosthesis",
       "orders": [
         {
           "id": 1,
@@ -48,7 +48,7 @@
       "shop_name": "Цех ортопедической обуви",
       "device_count": 2,
       "status": "draft",
-      "type": "Обувь",
+      "type": "shoes",
       "orders": [
         {
           "id": 3,
@@ -66,6 +66,36 @@
           }
         }
       ]
+    },
+    {
+      "id": 3,
+      "number": "OV-2025-003",
+      "date": "2025-09-17",
+      "shop_name": "Цех ортопедических изделий",
+      "device_count": 1,
+      "status": "confirmed",
+      "type": "orthopedic",
+      "orders": []
+    },
+    {
+      "id": 4,
+      "number": "OV-2025-004",
+      "date": "2025-09-18",
+      "shop_name": "Цех ремонта",
+      "device_count": 2,
+      "status": "draft",
+      "type": "repair",
+      "orders": []
+    },
+    {
+      "id": 5,
+      "number": "OV-2025-005",
+      "date": "2025-09-19",
+      "shop_name": "Склад готовой продукции",
+      "device_count": 4,
+      "status": "confirmed",
+      "type": "ready_poi",
+      "orders": []
     }
   ]
 }

@@ -169,7 +169,8 @@ class DataService {
       disability: cartData.disability || this.dictionaries.disabilities[0],
       disabilities: [],
       prosthetics_data: undefined,
-      tunduk_data: []
+      tunduk_data: [],
+      service_directions: []
     };
 
     this.carts.push(newCart);
@@ -264,7 +265,9 @@ class DataService {
       updated_at: new Date().toISOString(),
       materials: orderData.materials || [],
       works: orderData.works || [],
-      employees: orderData.employees || []
+      employees: orderData.employees || [],
+      semi_finished_products: orderData.semi_finished_products || [],
+      order_materials: orderData.order_materials || []
     };
 
     this.orders.push(newOrder);
@@ -338,9 +341,30 @@ class DataService {
     };
   }
 
-  async updateOrderStatus(id: number, status: number): Promise<Order> {
+  async updateOrderStatus(id: number, status: number, data?: any): Promise<Order> {
     await this.delay(400);
-    return this.updateOrder(id, { status });
+    const order = this.orders.find(o => o.id === id);
+    if (!order) throw new Error('Заказ не найден');
+    
+    const oldStatus = order.status;
+    const updatedOrder = await this.updateOrder(id, { status });
+    
+    // Добавляем запись в историю статусов
+    if (!updatedOrder.status_history) {
+      updatedOrder.status_history = [];
+    }
+    
+    updatedOrder.status_history.push({
+      id: Date.now(),
+      order_id: id,
+      from_status: { id: oldStatus, code: 'OLD', name: 'Предыдущий', color: '#gray', is_final: false, can_transition_to: [] },
+      to_status: { id: status, code: 'NEW', name: 'Новый', color: '#blue', is_final: false, can_transition_to: [] },
+      changed_by: { id: data?.changed_by || 1, username: 'system', first_name: 'System', last_name: 'User', email: 'system@rupoi.kg', role: { id: 1, name: 'System', code: 'SYSTEM', permissions: [], is_active: true }, is_active: true, is_blocked: false, last_activity: new Date().toISOString(), session_timeout: 5 },
+      changed_at: new Date().toISOString(),
+      comment: data?.comment
+    });
+    
+    return updatedOrder;
   }
 
   // Склад
@@ -632,6 +656,112 @@ class DataService {
   async getDisabilities(): Promise<any[]> {
     await this.delay(100);
     return this.dictionaries.disabilities;
+  }
+
+  // Направления на услуги
+  async getServiceDirections(cartId: number): Promise<any[]> {
+    await this.delay(100);
+    const cart = this.carts.find(c => c.id === cartId);
+    return cart?.service_directions || [];
+  }
+
+  async addServiceDirection(cartId: number, directionData: any): Promise<any> {
+    await this.delay(300);
+    const cart = this.carts.find(c => c.id === cartId);
+    if (!cart) throw new Error('Карточка не найдена');
+    
+    const newDirection = {
+      id: Math.max(...(cart.service_directions?.map(d => d.id) || [0])) + 1,
+      cart_id: cartId,
+      ...directionData,
+      created_at: new Date().toISOString()
+    };
+    
+    if (!cart.service_directions) cart.service_directions = [];
+    cart.service_directions.push(newDirection);
+    return newDirection;
+  }
+
+  // Направления на реабилитацию
+  async getRehabilitationDirections(cartId: number): Promise<any[]> {
+    await this.delay(100);
+    // В реальной системе это будет отдельная таблица
+    return [];
+  }
+
+  async addRehabilitationDirection(cartId: number, directionData: any): Promise<any> {
+    await this.delay(300);
+    const directionNumber = `${new Date().getFullYear()}/${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+    
+    const newDirection = {
+      id: Math.floor(Math.random() * 10000),
+      cart_id: cartId,
+      direction_number: directionNumber,
+      ...directionData,
+      created_at: new Date().toISOString()
+    };
+    
+    return newDirection;
+  }
+
+  // Полуфабрикаты
+  async getSemiFinishedProducts(orderId: number): Promise<any[]> {
+    await this.delay(100);
+    const order = this.orders.find(o => o.id === orderId);
+    return order?.semi_finished_products || [];
+  }
+
+  async addSemiFinishedProduct(orderId: number, productData: any): Promise<any> {
+    await this.delay(300);
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) throw new Error('Заказ не найден');
+    
+    const newProduct = {
+      id: Math.max(...(order.semi_finished_products?.map(p => p.id) || [0])) + 1,
+      order_id: orderId,
+      ...productData
+    };
+    
+    if (!order.semi_finished_products) order.semi_finished_products = [];
+    order.semi_finished_products.push(newProduct);
+    return newProduct;
+  }
+
+  // Готовые ПОИ
+  async getReadyPOI(orderId: number): Promise<any> {
+    await this.delay(100);
+    const order = this.orders.find(o => o.id === orderId);
+    return order?.ready_poi || null;
+  }
+
+  async updateReadyPOI(orderId: number, poiData: any): Promise<any> {
+    await this.delay(300);
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) throw new Error('Заказ не найден');
+    
+    order.ready_poi = {
+      id: order.ready_poi?.id || Math.floor(Math.random() * 10000),
+      order_id: orderId,
+      ...poiData
+    };
+    
+    return order.ready_poi;
+  }
+
+  // Справочники для распечатки
+  async getPrintTemplates(category?: string): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.print_templates?.filter(t => !category || t.category === category) || [];
+  }
+
+  async getSemiFinishedProductTemplates(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.semi_finished_product_templates || [];
+  }
+
+  async getShoeTemplates(): Promise<any[]> {
+    await this.delay(100);
+    return this.dictionaries.shoe_templates || [];
   }
 }
 

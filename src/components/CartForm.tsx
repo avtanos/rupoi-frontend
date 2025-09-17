@@ -25,6 +25,9 @@ export default function CartForm({ cart, onSave, onCancel }: CartFormProps) {
     document_issued_by: '',
     lovz_type: '',
     lovz_group: 1,
+    disability_cause: '',
+    operation_info: '',
+    additional_info: '',
     note: '',
     registration_oblast_id: 1,
     registration_raion_id: 1,
@@ -68,6 +71,16 @@ export default function CartForm({ cart, onSave, onCancel }: CartFormProps) {
       ]);
       setOblasts(oblastsData);
       setDisabilities(disabilitiesData);
+      
+      // Загружаем районы и населенные пункты для выбранных областей
+      if (formData.registration_oblast_id) {
+        const raionsData = await apiClient.getRaions(formData.registration_oblast_id);
+        setRaions(raionsData);
+      }
+      if (formData.living_oblast_id) {
+        const raionsData = await apiClient.getRaions(formData.living_oblast_id);
+        setRaions(raionsData);
+      }
     } catch (error) {
       console.error('Ошибка загрузки справочников:', error);
     }
@@ -211,6 +224,48 @@ export default function CartForm({ cart, onSave, onCancel }: CartFormProps) {
               <option value={2}>2 группа</option>
               <option value={3}>3 группа</option>
             </select>
+          </div>
+
+          <div className="col-span-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Причина инвалидности
+            </label>
+            <select
+              value={formData.disability_cause || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, disability_cause: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Выберите причину</option>
+              <option value="Травма">Травма</option>
+              <option value="Врожденный">Врожденный</option>
+              <option value="Заболевание">Заболевание</option>
+            </select>
+          </div>
+
+          <div className="col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Где и когда оперирован
+            </label>
+            <textarea
+              value={formData.operation_info || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, operation_info: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              placeholder="Опишите где и когда проводились операции"
+            />
+          </div>
+
+          <div className="col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Дополнения
+            </label>
+            <textarea
+              value={formData.additional_info || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, additional_info: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              placeholder="Дополнительная информация о пациенте"
+            />
           </div>
         </div>
       </div>
