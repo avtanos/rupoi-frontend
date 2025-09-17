@@ -227,7 +227,7 @@ export default function UIFieldBindingManager({
 
   const renderBindingsTable = () => {
     return (
-      {isMobile ? (
+      isMobile ? (
             // Мобильное отображение в виде карточек
             <MobileCardView
               data={data}
@@ -297,7 +297,7 @@ export default function UIFieldBindingManager({
             })}
           </ResponsiveTableBody>
         </ResponsiveTable>
-          )}
+          )
     );
   };
 
