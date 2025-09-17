@@ -189,6 +189,17 @@ class DataService {
     return this.carts[cartIndex];
   }
 
+  async deleteCart(id: number): Promise<void> {
+    await this.delay(400);
+    
+    const cartIndex = this.carts.findIndex(c => c.id === id);
+    if (cartIndex === -1) {
+      throw new Error('Карточка не найдена');
+    }
+
+    this.carts.splice(cartIndex, 1);
+  }
+
   // Заказы
   async getOrders(params?: Record<string, string>): Promise<PaginatedResponse<Order>> {
     await this.delay(300);

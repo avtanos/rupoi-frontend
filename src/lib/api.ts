@@ -54,6 +54,10 @@ class ApiClient {
     return dataService.updateCart(id, cart);
   }
 
+  async deleteCart(id: number): Promise<void> {
+    return dataService.deleteCart(id);
+  }
+
   // Orders
   async getOrders(params?: Record<string, string>): Promise<PaginatedResponse<Order>> {
     return dataService.getOrders(params);
